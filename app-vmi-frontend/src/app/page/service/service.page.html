@@ -1,0 +1,579 @@
+<div class="ion-page" main>
+  <ion-header [ngClass]="ionpage" class="parallax-obj parallax-translate-obj mobile">
+    <br />
+    <ion-toolbar>
+      <ion-buttons slot="start">
+        <ion-menu-button color="primary"></ion-menu-button>
+      </ion-buttons>
+      <ion-title color="primary">{{ 'SERVICES' | translate }}</ion-title>
+      <ion-buttons slot="end">
+        <ion-button *ngIf="role == 'admin'" (click)="openAdd()" color="primary">
+          <ion-icon slot="icon-only" name="ios-add"></ion-icon>
+        </ion-button>
+        <ion-button *ngIf="!sign && role == 'client'" color="primary" (click)="redeemSign()" (click)="closeSignature()">
+          <ion-icon slot="icon-only" name="ios-unlock"></ion-icon>
+        </ion-button>
+      </ion-buttons>
+    </ion-toolbar>
+  </ion-header>
+  <ion-content [ngClass]="ionpage">
+    <ion-refresher slot="fixed" (ionRefresh)="doRefresh($event)" (ionRefresh)="getData(pageselected)">
+      <ion-refresher-content>
+      </ion-refresher-content>
+    </ion-refresher>
+    <ion-segment mode="md" class="segment-wrap" color="secondary" [(ngModel)]="segment" name="segment">
+      <ion-segment-button (click)="getServiceCorrective(1)" mode="md" value="corrective">
+        <ion-label>{{ 'CORRECTIVE' | translate }}</ion-label>
+      </ion-segment-button>
+      <ion-segment-button (click)="getServiceMaintenance(1)" mode="md" value="maintenance">
+        <ion-label>{{ 'MAINTENANCE' | translate }}</ion-label>
+      </ion-segment-button>
+      <ion-segment-button (click)="getServiceInstallation(1)" mode="md" value="installation">
+        <ion-label>{{ 'INSTALLATION' | translate }}</ion-label>
+      </ion-segment-button>
+    </ion-segment>
+    <br />
+
+    <div>
+
+      <ion-list>
+        <p style="text-align: center;" *ngIf="services == ''">{{ 'NOITEM' | translate }}</p>
+        <ion-item-sliding #sliding id="sliding" *ngFor="let service of services">
+          <ion-item>
+            <ion-label>
+              <h2>{{ 'NUMBER' | translate }} : {{ service.id }}</h2>
+              <h2 *ngIf="service.status == 'open'" slot="end">
+                {{ 'OPENED' | translate }}
+              </h2>
+              <h2 *ngIf="service.status == 'on_hold'" slot="end">
+                {{ 'ONHOLD' | translate }}
+              </h2>
+              <h2 *ngIf="service.status == 'escalated'" slot="end">
+                {{ 'ESCALATED' | translate }}
+              </h2>
+              <h2 *ngIf="service.status == 'closed'" slot="end">
+                {{ 'CLOSED' | translate }}
+              </h2>
+              <h3>{{ service.description }}</h3>
+              <p *ngIf="role == 'admin' || role == 'tech'">{{ 'CLIENT' | translate }} : {{ service.customer.name }} -
+                {{ service.customer.company.name }}</p>
+              <p *ngIf="role == 'admin' || role == 'client'">{{ 'TECHNICIAN' | translate }} :
+                {{ service.technician.name }}</p>
+              <p>{{ 'EQUIPMENT' | translate }} : {{ service.equipment.serial_number }}</p>
+              <div *ngIf="service.equipment_request">
+                <p *ngIf="service.equipment_request.auth_code">{{ 'ACCESSCODE' | translate }} :
+                  {{service.equipment_request.auth_code}}</p>
+              </div>
+              <h3 *ngIf="service.equipment.singular_pieces">{{ 'PIECES' | translate }} :</h3>
+              <div *ngIf="service.equipment.singular_pieces">
+                <ion-label *ngFor="let piece of service.equipment.singular_pieces">
+                  <p>{{ piece.vmi_code }} : {{ piece.description }} : {{ piece.optional_id }}</p>
+                </ion-label>
+              </div>
+
+              <ion-button *ngIf="(role == 'admin' || role == 'tech') && service.attachments[0]"
+                (click)="showThumbs(service.attachments,false,service.id)">{{ 'ATTACHMENTS' | translate }}</ion-button>
+              <div class="row">
+                <div class="column" *ngFor=" let attachment of service.attachments ; let i = index">
+                  <img *ngIf="service.id == serviceselect" src="{{thumb[i]}}"
+                    (click)="openImage(attachment.id,true,'service_order')" />
+                </div>
+              </div>
+
+            </ion-label>
+            
+            <ion-buttons slot="end">
+              <ion-button color="tertiary" (click)="openSlide(sliding)">
+                <ion-icon slot="icon-only" name="more"></ion-icon>
+              </ion-button>
+            </ion-buttons>
+          </ion-item>
+          <ion-item-options>
+            <ion-item-option
+              *ngIf="role == 'tech' && service.equipment_request && service.equipment_request.auth_code && service.equipment_request.state == 'pre-approved'"
+              (click)="approve(service.equipment_request.id,service.equipment.serial_number,'active')" color="success">
+              {{ 'ACCEPT' | translate }}
+            </ion-item-option>
+            <ion-item-option *ngIf="role == 'tech' && !service.equipment_request"
+              (click)="scanCode(service.id,service.equipment.serial_number)" color="primary">
+              <ion-icon slot="end" name="qr-scanner"></ion-icon>
+            </ion-item-option>
+            <ion-item-option *ngIf="role == 'admin' || role == 'tech'"
+              (click)="TicketDesc(service.note,service.id,service.equipment.id,service.pieces,service.tasks,service.schedules,service.time_worked,service.status)"
+              color="tertiary">
+              <ion-icon slot="end" name="ios-search"></ion-icon>
+              {{ 'VISUALIZE' | translate }}
+            </ion-item-option>
+            <ion-item-option *ngIf="role == 'tech' || role == 'client' && service.status != 'closed'" color="primary"
+              (click)="getChatDesc(service.technician.name, service.technician.id, service.customer.name, service.chat.id)">
+              <ion-icon slot="end" name="ios-chatbubbles"></ion-icon>
+              Chat
+            </ion-item-option>
+            <ion-item-option (click)="presentFinalize(service.id)" *ngIf="role == 'tech' && service.status != 'closed'"
+              color="tertiary">
+              <ion-icon slot="end" name="ios-checkbox"></ion-icon>
+              {{ 'FINISH' | translate }}
+            </ion-item-option>
+          </ion-item-options>
+        </ion-item-sliding>
+        <h6 *ngIf="services != ''" style="text-align: center;">{{ 'PAGE' | translate }}</h6>
+        <ion-segment *ngIf="segment == 'corrective'" class="pagination segment-wrap" [(ngModel)]="pageselected"
+          name="pageselected" color="primary">
+          <ion-segment-button value="{{npage}}" *ngFor="let npage of page" (click)="  getServiceCorrective(npage)">
+            <a>{{npage}}</a>
+          </ion-segment-button>
+        </ion-segment>
+        <ion-segment *ngIf="segment == 'maintenance'" class="pagination segment-wrap" [(ngModel)]="pageselected"
+          name="pageselected" color="primary">
+          <ion-segment-button value="{{npage}}" *ngFor="let npage of page" (click)="  getServiceMaintenance(npage)">
+            <a>{{npage}}</a>
+          </ion-segment-button>
+        </ion-segment>
+        <ion-segment *ngIf="segment == 'installation'" class="pagination segment-wrap" [(ngModel)]="pageselected"
+          name="pageselected" color="primary">
+          <ion-segment-button value="{{npage}}" *ngFor="let npage of page" (click)="  getServiceInstallation(npage)">
+            <a>{{npage}}</a>
+          </ion-segment-button>
+        </ion-segment>
+      </ion-list>
+    </div>
+  </ion-content>
+
+  <div class="ticket-desc" *ngIf="hideMe3">
+    <ion-header class="parallax-obj parallax-translate-obj header-transparent modal">
+      <br />
+      <ion-toolbar>
+        <ion-buttons slot="end">
+          <ion-button color="primary" (click)="closeTicketDesc()">
+            <ion-icon slot="icon-only" name="close"></ion-icon>
+          </ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-header>
+
+
+    <ion-content class="ticket-desc" *ngIf="hideMe3">
+      <br />
+      <ion-card>
+        <ion-card-header (click)="expandItem(items[0])">
+          <ion-card-title color="primary">
+            {{ 'TASK' | translate }}
+          </ion-card-title>
+
+        </ion-card-header>
+
+        <ion-card-content>
+          <app-expandable expandHeight="2200px" [expanded]="items[0].expanded">
+            <ion-item type="reset" *ngIf="role == 'admin' && status != 'closed'" lines="none"
+              class="bg-white bdra-30 mgt-10 shadow-1 bg-light">
+              <ion-item lines="none" class="selection-task">
+                <ion-select (click)="getTask()" class="selection-chooser" interface="popover" [(ngModel)]="task"
+                  name="task">
+                  <ion-select-option value="{{task.id}},{{task.title}}" *ngFor="let task of tasks">{{task.title}}
+                  </ion-select-option>
+                </ion-select>
+              </ion-item>
+              <ion-button color="primary" fill="solid" class=" fw-600 pdl-30 pdr-30" type="submit"
+                (click)="addTask(task)">
+                <ion-icon slot="icon-only" name="add"></ion-icon>
+              </ion-button>
+            </ion-item>
+            <br *ngIf="role == 'admin' && status != 'closed'" />
+            <h2 *ngIf="role == 'admin' && status != 'closed'" class="txt-light uppercase">{{ 'TASKCHOOSE' | translate }}
+              :</h2>
+            <br *ngIf="role == 'admin' && status != 'closed'" />
+            <ion-item lines="none" *ngFor="let task of listalltasks ; let i = index">
+              <ion-label>
+                <h3 class="txt-dark uppercase">{{ 'TASK' | translate }}: {{ task.title }}</h3>
+                <p *ngIf="task.description != null" class="txt-dark uppercase">{{ 'DESCRIPTION' | translate }}:
+                  {{ task.description }}</p>
+              </ion-label>
+              <ion-note *ngIf="status != 'closed' && role == 'admin'" slot="end">
+                <ion-button color="danger" fill="solid" class=" fw-100" type="submit" (click)="deleteTask(i)">
+                  <ion-icon slot="icon-only" name="close"></ion-icon>
+                </ion-button>
+              </ion-note>
+            </ion-item>
+            <br *ngIf="role == 'admin' && status != 'closed'" />
+            <h2 *ngIf="role == 'admin' && status != 'closed'" class="txt-light uppercase">{{ 'TASKSAVED' | translate }}
+              :</h2>
+            <br *ngIf="role == 'admin' && status != 'closed'" />
+            <ion-item lines="none" *ngFor="let task of tasksListen ; let i = index">
+              <ion-label>
+                <h3 class="txt-dark uppercase">{{ task.task.title }}</h3>
+                <p *ngIf="task.task.description != null" class="txt-dark uppercase">{{ 'DESCRIPTION' | translate }}:
+                  {{ task.task.description }}</p>
+              </ion-label>
+            </ion-item>
+            <br *ngIf="status != 'closed'" />
+            <h2 *ngIf="status != 'closed'" class="txt-light">{{ 'NOTE' | translate }} :</h2>
+            <br />
+            <ion-item *ngIf="role == 'tech' && status != 'closed'" lines="none"
+              class="bg-white bdra-30 mgt-10 shadow-1 bg-light">
+              <ion-textarea [(ngModel)]="tasknote" name="tasknote" rows="5"></ion-textarea>
+            </ion-item>
+            <br />
+            <ion-item *ngIf="role == 'admin' && status != 'closed' && note != null" lines="none">
+              <ion-label>
+                <h3 class="txt-dark">{{ note }}</h3>
+              </ion-label>
+            </ion-item>
+            <br />
+            <ion-button *ngIf="role == 'tech' && status != 'closed'" shape="round" expand="block" color="primary"
+              fill="solid" class="uppercase spacing1 fw-600 pdl-30 pdr-30" type="submit" (click)="notes()">
+              {{ 'SAVE' | translate }}
+            </ion-button>
+            <ion-button *ngIf="role == 'admin' && status != 'closed'" shape="round" expand="block" color="primary"
+              fill="solid" class="uppercase spacing1 fw-600 pdl-30 pdr-30" type="submit" (click)="SendTasks()">
+              {{ 'SAVE' | translate }}
+            </ion-button>
+          </app-expandable>
+        </ion-card-content>
+      </ion-card>
+
+
+      <ion-card>
+        <ion-card-header (click)="expandItem(items[1])">
+          <ion-card-title color="primary">{{ 'PIECES' | translate }}</ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+          <app-expandable expandHeight="2200px" [expanded]="items[1].expanded">
+            <ion-item *ngIf="status != 'closed'" lines="none" class="bg-white bdra-30 mgt-10 shadow-1 bg-light">
+              <ion-select  (click)="getPiece()" class="selection-chooser" interface="popover" [(ngModel)]="piece"
+                name="piece" placeholder="Selecione uma Peça">
+                <ion-select-option value="{{piece.id}},{{piece.name}}" *ngFor="let piece of pieces">{{piece.name}}
+                </ion-select-option>
+              </ion-select>
+            </ion-item>
+            <br *ngIf="status != 'closed'" />
+            <p *ngIf="status != 'closed'" class="txt-light">{{ 'AMOUNT' | translate }} :</p>
+            <ion-item *ngIf="status != 'closed'" lines="none" class="bg-white bdra-30 mgt-10 shadow-1 bg-light">
+              <ion-input type="number" [(ngModel)]="amount" name="amount"></ion-input>
+              <ion-button color="primary" fill="solid" class=" fw-600 pdl-30 pdr-30" type="submit"
+                (click)="addPiece(piece,amount)">
+                <ion-icon slot="icon-only" name="add"></ion-icon>
+              </ion-button>
+            </ion-item>
+            <br *ngIf="status != 'closed'" />
+            <h2 *ngIf="status != 'closed'" class="txt-light">{{ 'PIECECHOOSE' | translate }} :</h2>
+            <br *ngIf="status != 'closed'" />
+            <ion-item lines="none" *ngFor="let piece of listallpieces; let i = index">
+              <ion-label *ngIf="status != 'closed'">
+                <h3 class="txt-dark">{{ 'NAME' | translate }}: {{ piece.name }}</h3>
+                <p class="txt-dark">{{ 'AMOUNT' | translate }}: {{ piece.amount }}</p>
+              </ion-label>
+              <ion-note *ngIf="role == 'admin' || role == 'tech' && status != 'closed'" slot="end">
+                <ion-button color="danger" fill="solid" class=" fw-100" type="submit" (click)="deletePiece(i)">
+                  <ion-icon slot="icon-only" name="close"></ion-icon>
+                </ion-button>
+              </ion-note>
+            </ion-item>
+            <br *ngIf="status != 'closed'" />
+            <h2 *ngIf="status != 'closed'" class="txt-light">{{ 'PIECESAVED' | translate }} :</h2>
+            <br />
+            <ion-item lines="none" *ngFor="let piece of piecesListen">
+              <ion-label>
+                <h3 class="txt-dark">{{ 'NAME' | translate }}: {{ piece.piece.name }}</h3>
+                <p class="txt-dark">{{ 'AMOUNT' | translate }}: {{ piece.amount }}</p>
+              </ion-label>
+            </ion-item>
+            <br />
+            <ion-button *ngIf="status != 'closed'" shape="round" expand="block" color="primary" fill="solid"
+              class="uppercase spacing1 fw-600 pdl-30 pdr-30" type="submit" (click)="SendPieces()">
+              {{ 'SAVE' | translate }}
+            </ion-button>
+          </app-expandable>
+        </ion-card-content>
+      </ion-card>
+
+
+      <ion-card>
+        <ion-card-header (click)="expandItem(items[2])">
+          <ion-card-title color="primary">{{ 'DATES' | translate }}</ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+          <app-expandable expandHeight="2200px" [expanded]="items[2].expanded">
+            <ion-label *ngIf="role == 'tech' && status != 'closed'" class="txt-light fs-12">
+              {{ 'STARTTIME' | translate }} :</ion-label>
+            <ion-item *ngIf="role == 'tech' && status != 'closed'" lines="none"
+              class="bg-white bdra-30 mgt-10 shadow-1 bg-light">
+              <ion-input type="datetime-local" [(ngModel)]="starttime" name="starttime"></ion-input>
+            </ion-item>
+            <br *ngIf="role == 'tech'  && status != 'closed'" />
+            <ion-label *ngIf="role == 'tech'  && status != 'closed'" class="txt-light fs-12">{{ 'ENDTIME' | translate }}
+              :</ion-label>
+            <ion-item *ngIf="role == 'tech'  && status != 'closed'" lines="none"
+              class="bg-white bdra-30 mgt-10 shadow-1 bg-light">
+              <ion-input type="datetime-local" [(ngModel)]="endtime" name="endtime"></ion-input>
+            </ion-item>
+            <br *ngIf="role == 'tech'  && status != 'closed'" />
+            <ion-button *ngIf="role == 'tech' && status != 'closed'" shape="round" expand="block" color="primary"
+              fill="solid" class="uppercase spacing1 fw-600 pdl-30 pdr-30" type="submit" (click)="addTime()">
+              {{ 'SAVE' | translate }}
+            </ion-button>
+            <br />
+            <h2 class="txt-light">{{ 'TIMESAVED' | translate }} :</h2>
+            <br />
+            <ion-item lines="none" *ngFor="let time of times">
+              <ion-label>
+                <h3 class="txt-dark">{{ 'STARTTIME' | translate }}:
+                  {{ time.start_time.substring(0,10).split('-').reverse().join('/') }}</h3>
+                <h3 class="txt-dark">{{ time.start_time.substring(11,16) }}</h3>
+                <h3 class="txt-dark">{{ 'ENDTIME' | translate }}:
+                  {{ time.end_time.substring(0,10).split('-').reverse().join('/') }}</h3>
+                <h3 class="txt-dark">{{ time.end_time.substring(11,16) }}</h3>
+              </ion-label>
+              <ion-note *ngIf="status != 'closed'" slot="end">
+                <ion-button color="danger" fill="solid" class=" fw-100" type="submit" (click)="deleteTime(time.id)">
+                  <ion-icon slot="icon-only" name="close"></ion-icon>
+                </ion-button>
+              </ion-note>
+            </ion-item>
+            <br />
+            <h2 class="txt-light">{{ 'TIMEWORKED' | translate }} : {{time_worked}}</h2>
+          </app-expandable>
+        </ion-card-content>
+      </ion-card>
+      <br />
+      <br />
+      <br />
+      <br />
+      <br />
+      <br />
+      <br />
+    </ion-content>
+  </div>
+
+  <div class="rating" *ngIf="rating">
+    <ion-header class="parallax-obj parallax-translate-obj header-transparent modal">
+      <br />
+      <ion-toolbar>
+        <ion-title color="primary">{{ 'RATED' | translate }}</ion-title>
+        <ion-buttons slot="end">
+          <ion-button color="primary" (click)="closeTicketRating()">
+            <ion-icon slot="icon-only" name="close"></ion-icon>
+          </ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-header>
+
+
+    <ion-content class="modalTicketDesc" *ngIf="rating">
+      <br />
+      <div class="main-form wrap-interval">
+        <br />
+        <br />
+        <br />
+        <br />
+        <form novalidate>
+          <ion-label class="txt-dark fs-14 text-label">{{ 'RATEDESC' | translate }} :</ion-label>
+          <br />
+          <br />
+          <ionic4-star-rating #rating activeIcon="ios-star" defaultIcon="ios-star-outline" activeColor="#EEBB00"
+            defaultColor="#a1a1a1" readonly="false" rating="1" fontSize="48px"
+            (ratingChanged)="logRatingChange($event)">
+          </ionic4-star-rating>
+          <br />
+          <ion-button shape="round" expand="block" color="primary" fill="solid" class="spacing1 fw-600 pdl-30 pdr-30"
+            type="submit" (click)="rateTicket()">
+            {{ 'RATE' | translate }}
+          </ion-button>
+        </form>
+        <br />
+      </div>
+    </ion-content>
+  </div>
+
+  <div class="sign" *ngIf="sign">
+    <ion-content class="sign" *ngIf="sign">
+      <div class="main-form wrap-interval">
+        <form novalidate>
+          <h2>{{ 'SIGN' | translate }}</h2>
+          <div class="signature-text">
+            <h3>{{signature}}</h3>
+          </div>
+          <br />
+          <div class="signature-desc">
+            <h5>{{ 'SIGNDESC' | translate }}</h5>
+          </div>
+          <br />
+          <br />
+          <ion-button shape="round" expand="block" color="primary" fill="solid"
+            class="uppercase spacing1 fw-600 pdl-30 pdr-30" type="submit" (click)="removeclass()"
+            (click)="closeSignature()">
+            {{ 'QUIT' | translate }}
+          </ion-button>
+        </form>
+        <br />
+      </div>
+    </ion-content>
+  </div>
+
+  <div class="chat" *ngIf="chat">
+    <ion-header class="parallax-obj parallax-translate-obj header-transparent modal">
+      <br />
+      <ion-toolbar>
+        <ion-title *ngIf="role == 'client'" color="primary">{{chatmessage.title_client}}</ion-title>
+        <ion-title *ngIf="role == 'tech'" color="primary">{{chatmessage.title_technician}}</ion-title>
+        <ion-buttons slot="end">
+          <ion-button color="primary" (click)="closeChat()">
+            <ion-icon slot="icon-only" name="close"></ion-icon>
+          </ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-header>
+
+
+    <ion-content class="modalTicketDesc" *ngIf="chat" #content id="content">
+      <br />
+      <div class="main-form wrap-interval" *ngIf="role == 'client'">
+        <div class="message-wrap">
+          <div *ngFor="let msg of msgList;let i = index; let first = first; let last = last" class="message">
+            <div class="message-left" *ngIf="msg.receiver == technician_id">
+              <div class="msg-detail">
+                <div class="msg-content">
+                  <p class="line-breaker ">{{msg.content}}</p>
+                </div>
+                <div *ngIf="msg.attachments != ''" class="msg-att">
+                  <img (click)="openImage(msg.attachments[0].id,true,'message')" style="width: 43px; margin-top:-8px;"
+                    src="data:image/png;base64,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"
+                    *ngIf="msg.attachments[0].ext == 'IMG'" class="line-breaker " />
+                  <img (click)="openImage(msg.attachments[0].id,true,'message')" style="width: 43px; margin-top:-8px;"
+                    src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAB2AAAAdgB+lymcgAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAASrSURBVHic7ZtLaFxVGMd/333MTCePyaNJm6oNibEmTU0XImIJiqXQhQiuRSoirn0RV3Xlztqq4Eow4LZrEVHTICLiA8VXOwkNQdumJG3avOdxZ+5xESNJvDOZM3Pn3oyTP8xizv3O933nd8/rzpwrlKGpW7lnUeoV4CEgVo6P7VKA60ImR3bN4c+1jMoojO+V8EkubX5++ris+hFnu0S3wtSscwHh1Woks1nZnMrOLsmyC+3AslJciIp1frhflv2MowVgetY57Qqf+ZlAMbkKZhZZy7vE/ymac12eO3XU/sKvGIZWQsKLfgUuRYbAgSbim+5Sp2Hw6Xgy+7JvMTTtH/ArcKmyTYhHtxRZCnlvPOm85Yf/kgCMT6vY17+qVnya8HTVEPlvmYKzl5LO25X6LjoHjCWzL4CMCAwAHEqs35GglXfh+kLBy+dO9ttvlOu7YA+4dMU5L8joRuPDlGEUvVMjlQwHTwBjk87jCK+V69RvCaCKEKhkOHgCEFfOlOMsZI2UA8EbAKq38nxCkTaEQnOA5UMyYUkLgu4+IDRpJlryxFgzACKafVLB2bGJ7Es72dUMgEQZWzBR8sH4hDNczKZmAMRsaIlrP75GXMWHF5UquH2rGQCw3gsOJqAptg4kZm39RC2wDLWljsDA/gnn+UI+a262j5jQFi9mIeRcxUpGWM7gui4GSl4HRr2sa6oHlCrLEFr2QVcThmnIIsLR8T/SfZ62QSe3ocurf/Ht0mVc5XpeNzF4onWI+/cdKjuGZUJXs0rMLHBHmcZTwPvbbULrATOZ+YKNB8jjMpOdrziOaUB7EzGFcdzr+v9yCGxX3CbeGPXe3tcFAIB4hIRXed0AiJikvcrrBoBp4HiV1w2AQtoDEHYCYWsPQNgJhK09AGEnELbqHkBgT4OOm+OWs4hi/QeLlJvZsc5qPsONzG0ADISOSAuW+PvfXGAAvlr4jen0Ta0619JzXEvP/ft9oOEww4ljvuYV2BDoirZVVF+Ag3arP8lsUmAABhu6ebS5v6y6AjyWGKQvfo+/SRHwJDjU2KsNYaPxgw3dVckp8FVAB0K1Gw8hLYOlQAii8RDiPqAYhKAaDyFvhLwgBNl42AV/jAw19mIbFj8tX8UQ4ZHGI1WZ7QspdAAAA/HDDMQPhxK77p8F6h5AIEPgx6UJJlM3yKl8RX4ssTjW0M1Qo39HmKoO4GZmnp9XpnzxlcHhu6Uk98Y6aLOafPFZ9SGQVln/feb981l1APdFO2m3m33z1xVtpytS2ZPlZlV9CFhi8sz+E9zOLeG4uYp8RcSm3W5GRPs9j4IKZBI0xKDTbgkilLbqfhnUAqB2NtnN8hx/WgBylS3joUopuepVrgVgZecfcnex1MdepVoAUk5tQhDhXN8B+xuva9qT4Pwq3FmtmeHwuyg509tR+JWaspbB5cz6RwDZfetIsqfTOuHeJdXTI57HYjbLE4DC+ziJhx1FTrqFIqVIdbfI3VLtC7wxIpP+pRS01ISOtSeAvLij1Oiyb5jykZa9V+GpByM/CLzpT0rBSeCdJ4/YX2rWKayxK7mnDVEjCh4Gip7RDlEphF9Q8u7JfuuibuW/ATkYRQHHdU0fAAAAAElFTkSuQmCC"
+                    *ngIf="msg.attachments[0].ext == 'DOC'" class="line-breaker " />
+                  <img (click)="openImage(msg.attachments[0].id,true,'message')" style="width: 43px; margin-top:-8px;"
+                    src="data:image/png;base64,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"
+                    *ngIf="msg.attachments[0].ext == 'VID'" class="line-breaker " />
+                  <img (click)="openImage(msg.attachments[0].id,true,'message')" style="width: 43px; margin-top:-8px;"
+                    src="data:image/png;base64,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"
+                    *ngIf="msg.attachments[0].ext == 'AUD'" class="line-breaker " />
+                </div>
+              </div>
+            </div>
+            <div class="message-right" *ngIf="msg.sender == technician_id">
+              <ion-spinner name="dots" *ngIf="msg.status === 'pending'"></ion-spinner>
+              <div class="msg-detail">
+                <div class="msg-info">
+                </div>
+                <div *ngIf="msg.attachments != ''" class="msg-att">
+                  <img (click)="openImage(msg.attachments[0].id,true,'message')" style="width: 43px; margin-top:-8px;"
+                    src="data:image/png;base64,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"
+                    *ngIf="msg.attachments[0].ext == 'IMG'" class="line-breaker " />
+                  <img (click)="openImage(msg.attachments[0].id,true,'message')" style="width: 43px; margin-top:-8px;"
+                    src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAB2AAAAdgB+lymcgAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAASrSURBVHic7ZtLaFxVGMd/333MTCePyaNJm6oNibEmTU0XImIJiqXQhQiuRSoirn0RV3Xlztqq4Eow4LZrEVHTICLiA8VXOwkNQdumJG3avOdxZ+5xESNJvDOZM3Pn3oyTP8xizv3O933nd8/rzpwrlKGpW7lnUeoV4CEgVo6P7VKA60ImR3bN4c+1jMoojO+V8EkubX5++ris+hFnu0S3wtSscwHh1Woks1nZnMrOLsmyC+3AslJciIp1frhflv2MowVgetY57Qqf+ZlAMbkKZhZZy7vE/ymac12eO3XU/sKvGIZWQsKLfgUuRYbAgSbim+5Sp2Hw6Xgy+7JvMTTtH/ArcKmyTYhHtxRZCnlvPOm85Yf/kgCMT6vY17+qVnya8HTVEPlvmYKzl5LO25X6LjoHjCWzL4CMCAwAHEqs35GglXfh+kLBy+dO9ttvlOu7YA+4dMU5L8joRuPDlGEUvVMjlQwHTwBjk87jCK+V69RvCaCKEKhkOHgCEFfOlOMsZI2UA8EbAKq38nxCkTaEQnOA5UMyYUkLgu4+IDRpJlryxFgzACKafVLB2bGJ7Es72dUMgEQZWzBR8sH4hDNczKZmAMRsaIlrP75GXMWHF5UquH2rGQCw3gsOJqAptg4kZm39RC2wDLWljsDA/gnn+UI+a262j5jQFi9mIeRcxUpGWM7gui4GSl4HRr2sa6oHlCrLEFr2QVcThmnIIsLR8T/SfZ62QSe3ocurf/Ht0mVc5XpeNzF4onWI+/cdKjuGZUJXs0rMLHBHmcZTwPvbbULrATOZ+YKNB8jjMpOdrziOaUB7EzGFcdzr+v9yCGxX3CbeGPXe3tcFAIB4hIRXed0AiJikvcrrBoBp4HiV1w2AQtoDEHYCYWsPQNgJhK09AGEnELbqHkBgT4OOm+OWs4hi/QeLlJvZsc5qPsONzG0ADISOSAuW+PvfXGAAvlr4jen0Ta0619JzXEvP/ft9oOEww4ljvuYV2BDoirZVVF+Ag3arP8lsUmAABhu6ebS5v6y6AjyWGKQvfo+/SRHwJDjU2KsNYaPxgw3dVckp8FVAB0K1Gw8hLYOlQAii8RDiPqAYhKAaDyFvhLwgBNl42AV/jAw19mIbFj8tX8UQ4ZHGI1WZ7QspdAAAA/HDDMQPhxK77p8F6h5AIEPgx6UJJlM3yKl8RX4ssTjW0M1Qo39HmKoO4GZmnp9XpnzxlcHhu6Uk98Y6aLOafPFZ9SGQVln/feb981l1APdFO2m3m33z1xVtpytS2ZPlZlV9CFhi8sz+E9zOLeG4uYp8RcSm3W5GRPs9j4IKZBI0xKDTbgkilLbqfhnUAqB2NtnN8hx/WgBylS3joUopuepVrgVgZecfcnex1MdepVoAUk5tQhDhXN8B+xuva9qT4Pwq3FmtmeHwuyg509tR+JWaspbB5cz6RwDZfetIsqfTOuHeJdXTI57HYjbLE4DC+ziJhx1FTrqFIqVIdbfI3VLtC7wxIpP+pRS01ISOtSeAvLij1Oiyb5jykZa9V+GpByM/CLzpT0rBSeCdJ4/YX2rWKayxK7mnDVEjCh4Gip7RDlEphF9Q8u7JfuuibuW/ATkYRQHHdU0fAAAAAElFTkSuQmCC"
+                    *ngIf="msg.attachments[0].ext == 'DOC'" class="line-breaker " />
+                  <img (click)="openImage(msg.attachments[0].id,true,'message')" style="width: 43px; margin-top:-8px;"
+                    src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAB2AAAAdgB+lymcgAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAAb2SURBVHic1ZtLjBxHGcd/9eqentkHOH7EMaA4fkTGkIgQOSQimMQRQhHIHIhAQsopyASQRTgglAOgBIQ4gDggmVPEI6AgGSlcHWwrD2yU8IgIsF47GMk2xgQUe9f2zs50d30c1ju7OzO70zPT07P7k1aq6a6ux7+/qu+rql5FF/zzUv1DYtTXxXM/inVZnxPAe4UHUlEkXhF7hUhTPgEvghdJk8S/nXomBV4S5Dcv73R/+JZSvpv2ZkFlzXj2v/XHRNSPAZNX5fVUUUs1sW/fjHrsk1rsDaBAziN8W11yzzzwgEryakMmAc68Vf+ARr0K2LwqXkziFddjTSqtzUlSz2zNiyy0dRLhwIO73It51K0zZVJ8lQF1HsBqYSxMCW2rhVujcU4vVuZ2FC8cPVX/Qh51ZxIA0ffmUdlKKKBiPeU2IgROo9US63AKdejYRPwDkTZm0wWZBFDIO/qppBtK1hM1iaAA59r0U/HE8cnkh/2IkM0CCiaynkAvdRFWL9vHg/2IsCoFAKi4lMV9bhoCzRw8Ppke6kWEVSuAUhC5dNGFuWvLIwd6sYRVKwBAqAXbNBQ60LUlrGoBYM4zdIcc6EaEVS+A0dIyIXYmuwgtwc2Lp6pbPfYg8EGBMkAK48NUKnKeuNZtBC4Hjk+miMjjSqllFVwiwLHJeF8qPA+MLC2LLlYN+WOU4Ey3VgA3JsaaiHxlOREaL/aFf8g4wnM0d36VULZpJ1e4HAePnUq+udzNhgC2nn4KWN9LDUWgFURBb88qxTeOn0o+3bbcRsrHO3orvjjWRYI1PVmBEuQnvz09e1vzjYYA0RuvvaefxhWBUnDzmBDYnkSoaK+fbr7YEGD0xJE9pnq1n/YVglGweUzYOArlUBEGuuUvcBpnNaZl/aA+e2yyfufiKw0B9Mz1kQ0/egrieiEd6ZfIwYaK8M4SlJwmsAt/odOUAk25ZKiUDG5h2Gi8/vzicpa4QfvvC2x56kvM3PcQ1/bsJR0Zm7tRZahuEGMgCNveCq0nNJ5aqqmmGt/k7LRWlEKDSTyzsU/BfxL48vz9RrcmHnvigrl4fkvjwbFxVKWSd1d6Jwzh1tvgnnth1+62WQSoJprZpH3YliReqnWvjPg79u4K34A1EAo3qNVgcgJ+9gz84qdQbx2qCihbz1iYtl1EWauVs6qaYhoeb+0IsJi//gWee5aWffUbWCWMuZSSabu9FpVC9s//XpsCAEz8DV7/4/L3FZRd6/aaVgqj1V2N3wNrYBG88lLHLFGbPUanVWP8rG0BLv4LZq53zBZZj1s0J2hFPJ9uuEGVJCsGAP+xhokw4LouRjMrwi1xyu5aHc0KK8HpaSh39lYVlzJVt4iAmjulm6tnPmGmr1wS2Nru4dOh4/DYKL7oYCCCP8cJn5uaYtnVcJLtlEwriIxnpslFZnqdRyqV4jt/g3PO8loU5VJWaHzLxmpHAapKc8Xkdh7aE+dcPqdySrFkLoAMAixzcFsoVZXfvBPoJreYW8lrhMAIwsKsOjABttVj9l6vsiXO7Sg/N4zm8nx6IEfed8/O8vGrc/75wzOKv4cBRytlps3qMDij/P/m0wMR4I5qrZFWCLtrNXbW65yMIk6WS8S9bW7mhtY0oqeBvBLTJnBxInxkZoYvXr7C+2drqJWCmwFjkep8unCbHE09+69e49Er06xL084PDAClGP5a4N1xwiPTw9+DHOqstD5Jccus6YtiqAKcc3boE+LAvvxaCQFeL5U4NpJPjN8PhQtw0VqOjFa4YIeifQsDaUVdaWDpDD+lNUdHKkyEDhnqHvtSBiLAyXKJLVMJGiFWihPlEr+PoqGP93YMRIDTQcChm8bZHCecc45rBe0i9cLABuJlbbgcDncfIQur99UUREcBnMhQ43aAEZ/7vwk06ChAIMKmZHANyMLONsdgeZFpCDx89RrlAb6FlbirWuN9s4MTINMkeEuS8PjlKc46x1RBmxqBCO9KYm6OO6wYgx4/HLpBZi8Qec/uWq1zxiLRGsbG+ytiITkkG++HW7dCqdRXEQsCKHO23/YUzkf39V1EQ4CY5Gml9dqxgvvuhx23911MQ4D3/vqXZyiF3xvux0AZ0Br2fQw+sb9z3gwsmQR3HP75k2ceefRPKk6/DwQKZgCS8XVbUUWuZKQl9EqjEcy2bdg998CGDbnVlKlTL59JrsWpDPWLqZKDTaO5FffdbRvdk5D53+aGGwpbDetzlF9k4WQokwDWci6/6rujEsDmccg5/vrdfCJTIBSY9GumZJ8HKWR9qwSsmfsa1OVf4yvbN7kTjbqyPvXmW8lnFPIsQ9pIzQf1phjz4Pab1Pn5K5kNa/tG+ytv/J3AYYS3B9K+wRADpwW+gzV3L+48wP8BiTQ8uoofLr8AAAAASUVORK5CYII="
+                    *ngIf="msg.attachments[0].ext == 'VID'" class="line-breaker " />
+                  <img (click)="openImage(msg.attachments[0].id,true,'message')" style="width: 43px; margin-top:-8px;"
+                    src="data:image/png;base64,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"
+                    *ngIf="msg.attachments[0].ext == 'AUD'" class="line-breaker " />
+                </div>
+                <div class="msg-content">
+                  <p class="line-breaker ">{{msg.content}}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <br />
+          <br />
+          <br />
+          <br />
+          <br />
+        </div>
+        <br />
+        <br />
+        <br />
+        <br />
+        <br />
+      </div>
+
+
+      <div class="main-form wrap-interval" *ngIf="role == 'tech'">
+        <div class="message-wrap">
+          <div *ngFor="let msg of msgList;let i = index; let first = first; let last = last" class="message">
+            <div class="message-left" *ngIf="msg.sender == technician_id">
+              <div class="msg-detail">
+                <div class="msg-content">
+                  <p class="line-breaker ">{{msg.content}}</p>
+                </div>
+                <div *ngIf="msg.attachments != ''" class="msg-att">
+                  <img (click)="openImage(msg.attachments[0].id,true,'message')" style="width: 43px; margin-top:-8px;"
+                    src="data:image/png;base64,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"
+                    *ngIf="msg.attachments[0].ext == 'IMG'" class="line-breaker " />
+                  <img (click)="openImage(msg.attachments[0].id,true,'message')" style="width: 43px; margin-top:-8px;"
+                    src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAB2AAAAdgB+lymcgAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAASrSURBVHic7ZtLaFxVGMd/333MTCePyaNJm6oNibEmTU0XImIJiqXQhQiuRSoirn0RV3Xlztqq4Eow4LZrEVHTICLiA8VXOwkNQdumJG3avOdxZ+5xESNJvDOZM3Pn3oyTP8xizv3O933nd8/rzpwrlKGpW7lnUeoV4CEgVo6P7VKA60ImR3bN4c+1jMoojO+V8EkubX5++ris+hFnu0S3wtSscwHh1Woks1nZnMrOLsmyC+3AslJciIp1frhflv2MowVgetY57Qqf+ZlAMbkKZhZZy7vE/ymac12eO3XU/sKvGIZWQsKLfgUuRYbAgSbim+5Sp2Hw6Xgy+7JvMTTtH/ArcKmyTYhHtxRZCnlvPOm85Yf/kgCMT6vY17+qVnya8HTVEPlvmYKzl5LO25X6LjoHjCWzL4CMCAwAHEqs35GglXfh+kLBy+dO9ttvlOu7YA+4dMU5L8joRuPDlGEUvVMjlQwHTwBjk87jCK+V69RvCaCKEKhkOHgCEFfOlOMsZI2UA8EbAKq38nxCkTaEQnOA5UMyYUkLgu4+IDRpJlryxFgzACKafVLB2bGJ7Es72dUMgEQZWzBR8sH4hDNczKZmAMRsaIlrP75GXMWHF5UquH2rGQCw3gsOJqAptg4kZm39RC2wDLWljsDA/gnn+UI+a262j5jQFi9mIeRcxUpGWM7gui4GSl4HRr2sa6oHlCrLEFr2QVcThmnIIsLR8T/SfZ62QSe3ocurf/Ht0mVc5XpeNzF4onWI+/cdKjuGZUJXs0rMLHBHmcZTwPvbbULrATOZ+YKNB8jjMpOdrziOaUB7EzGFcdzr+v9yCGxX3CbeGPXe3tcFAIB4hIRXed0AiJikvcrrBoBp4HiV1w2AQtoDEHYCYWsPQNgJhK09AGEnELbqHkBgT4OOm+OWs4hi/QeLlJvZsc5qPsONzG0ADISOSAuW+PvfXGAAvlr4jen0Ta0619JzXEvP/ft9oOEww4ljvuYV2BDoirZVVF+Ag3arP8lsUmAABhu6ebS5v6y6AjyWGKQvfo+/SRHwJDjU2KsNYaPxgw3dVckp8FVAB0K1Gw8hLYOlQAii8RDiPqAYhKAaDyFvhLwgBNl42AV/jAw19mIbFj8tX8UQ4ZHGI1WZ7QspdAAAA/HDDMQPhxK77p8F6h5AIEPgx6UJJlM3yKl8RX4ssTjW0M1Qo39HmKoO4GZmnp9XpnzxlcHhu6Uk98Y6aLOafPFZ9SGQVln/feb981l1APdFO2m3m33z1xVtpytS2ZPlZlV9CFhi8sz+E9zOLeG4uYp8RcSm3W5GRPs9j4IKZBI0xKDTbgkilLbqfhnUAqB2NtnN8hx/WgBylS3joUopuepVrgVgZecfcnex1MdepVoAUk5tQhDhXN8B+xuva9qT4Pwq3FmtmeHwuyg509tR+JWaspbB5cz6RwDZfetIsqfTOuHeJdXTI57HYjbLE4DC+ziJhx1FTrqFIqVIdbfI3VLtC7wxIpP+pRS01ISOtSeAvLij1Oiyb5jykZa9V+GpByM/CLzpT0rBSeCdJ4/YX2rWKayxK7mnDVEjCh4Gip7RDlEphF9Q8u7JfuuibuW/ATkYRQHHdU0fAAAAAElFTkSuQmCC"
+                    *ngIf="msg.attachments[0].ext == 'DOC'" class="line-breaker " />
+                  <img (click)="openImage(msg.attachments[0].id,true,'message')" style="width: 43px; margin-top:-8px;"
+                    src="data:image/png;base64,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"
+                    *ngIf="msg.attachments[0].ext == 'VID'" class="line-breaker " />
+                  <img (click)="openImage(msg.attachments[0].id,true,'message')" style="width: 43px; margin-top:-8px;"
+                    src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAB2AAAAdgB+lymcgAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAAfFSURBVHic3Zt7iB1XHcc/vzOv+9q7zXZ3806MSZrGmCa2UlIxajZYQSk+8I8KFSkoUSlBC4pUqEJFEbH4T2lVKIIgRUEt/aMljVnTVqFRU5Ngms2jSTfmtbt53HSzex8z5/jHZu/evY+9j5l7d9cPXPbMzJnz+53vnjPn8ZsRmuDs5fwOY8n3jGYnQk+j9xlAa0EDgRF8LRS0YExZPgPaGLQxge/ra4FmyMBrBvPi63c5//yhiG7G30aQRjO+M5r/qjHyHGBFZTwfCLlAUdDV3cgXtJ8raAsQMOcx/EguO8/v2iV+VD40JMCpkfyHFHIIsKMyXIqvhVsFRWAq3fEDTTanjZnxdQjDnoHNzsEobKuGMgmP06bKA9jKkPYCPLuyhduWwnFUqTKbEF79y4n816Ow3ZAAGPVAFMbmQoCkrUlUEcF1FEpmtQ5HkGcPvF142pgqzaYJGhJAMHeEMdIMMVsTLxNBAMepUk/h24ND/i/CiNBYC+gwcVvjqtlDhK1q1nFvGBEWpAAASSegtM5lXaCcvYNDwbOtiLBgBRCBuBOUnJg6Vxuzp5WWsGAFAPCUwS7rCnVouiUsaAFgamRoDrOnGREWvACWMhUPxPo0LkLF5Obgicl1GnsvcJ+BBEAA3fOpVNzRFHLNzsDNnsGhAGPMN0SkpoKzBDgwVNgdGP4MpGaXRROrhuixxOBYzbYCuP1gzBljvlVLhOI/9tUzphvDC5RXfoGQsIN6Q2Et9h444f+g1sWiAHY++BzQ24qFTqAE4m5r94rw5OAJ/4tVy51O+KawsbXiO0dP3GBbLbUCMZjf7D+ZfX/5haIAF7Mja8I41wlEYFna4NotiZBUWj1VfrIowMkbw/cXTD6Mfx3BElieNvR3QcITPFdV/FxH4dgKq2L9IA8fGMpvKz1TFCDrF1L7ht/ENwGLgbgDfUnDkhjEHIVrz/w8RxFzFYmYRTJm4cx0G4VWXystZ9YweC2T40+nD3JX70rWp1fiWR4AOQ21F2PtxxLBlur7MZ6t8SxNLlBMBgpdNtgpJcQ8C8vXZAs6AP0Q8Nj09YpSs5Oao+fPc7bvHIklt1tDNrrKtIojNsu8HjYnVrM2tnT2RZkSwrU1k74i61dO2xxbIaAm83rNwbdzWz++2TsGi2AqPE3B+JzPjrDv2r/Yf+0whSpdVYCErUl7QdVFlG0rcWyZDLCKI96iEaCUs9nLDF7/N4bqs0NbDGknIGZV3V6Lxzw+O328KAUAeDd7hdOTF2tnEEg4ldtrSgRLyb3F47Z52AGOjZ+tmydeZY/RUVIc7xe1AFcLN8np+nOXuK1xSp4JSihMp4ujgDFzl9THFTbLcZIy0Zq3TeJjccms4LjZip5jKXpL5/BU/UVC0gnI5G2MAZmK0gElAkwE2ctgrat280Y5yefV77GIPDQ3NwLbeIsXgkcIakTkAt2YT0ogbmkmyobIhrrAJ9Urna/8bdbwLvfJPyIpy7N0xcZq3XBXjEm6uRHKcGbCZixjM3bTYSxjM3o7PZpxUGL4/sP/JRWvLfBaOcchsyOUDzC1mHKUoXT0rCtAK//5mxMWv3q5nwtjHqMZh7w/9zz6wlWXTatqTze9CKeirtLkg5mG35aA57FzCQ4NdbWj6NC4liEXzLSBtgyDOly8su1YiuvT6UU9D2gVS/TYdHpeBbDmybpS3JpOt+2lB4CueMCa/hy9aZ++7gK93T696Zm/T/9xBYdPJ9vpQlVszORMuo18dMt7PPrgSDtNtIQI/x9rgShoawso5/J1l9/9tZeLVx1W3plnLNNR81WJzIPXjnVx+EyKuKtxncqNiuERjyd/u5qJnCoeLwQiEeCZl5Zx8Fh6zjzP7+svVn4hEdqjN0+k6lb+xi2L48PxsKbaQmgBDhzprptnfHLu0HaTb4FESmgBro3X7kXTEenetF+zkiKG/iWRvfnaNKEF6EnVjiT1pqd2nmKu5hP3ZKrm2fnBcbri8xeNCi3Arm3VK+Y5mo98YLx4/KVdV1nTl5uVZ1VvnkcG5neiFHoU2HH3e9y/KTVr+SsCXx4Yo6drpml3xQN+/Ogwb/wnzcWrLsuX5Nm59SauPX/9HxoQoFAjJlfK41+4xOCRCd46kyTmGnbdk2HL2srNU9c2DNRoMXORI9b0PY1St3Z54zHKUvq4UjOPEti9PcPu7c1XrhFOmrvbUi40+Ax4WX+aHPMzcztqtnPUbKufsUUaegZcMKt5LniMjXKK+MxSuq0UcLnISi6ZFXPms1W4D1gafghOkOSI2R7KWNQoEVIq3POhpAtE/0FSu1nqLsFR4QayogCi9DuhPeow21MbQpdRFEArnlLzFf5pgS3J97HKC/9aY1GAXz740KlYSv+0tZcxO4eIcG/XRh7o3hxJebM60DOf+swT39z/0uEga/0cJS4wAZCQ+Dozr28LgyseK2M9bEmt5g47uo3Uhir1+il/vBCYzm/flhBzYGl0waafrO93noCGP5ub5/m6gt4I5TemyciQbTMcnfnmSLqwvDvyIMrfphMNDaKuFXzXjlkvmg5to4sB25p6G9SJ7EvlIm9sWOr8vWir0btOj/hfEcyvASdylzqGnDaWNbDhTjlfPNPM7WdG8x82hu8I8jFgWeT+tYcCcNbAH8S2f7a+R2YtWf8HKtGMveEcVUsAAAAASUVORK5CYII="
+                    *ngIf="msg.attachments[0].ext == 'AUD'" class="line-breaker " />
+                </div>
+              </div>
+            </div>
+            <div class="message-right" *ngIf="msg.receiver == technician_id">
+              <ion-spinner name="dots" *ngIf="msg.status === 'pending'"></ion-spinner>
+              <div class="msg-detail">
+                <div class="msg-info">
+                </div>
+                <div *ngIf="msg.attachments != ''" class="msg-att">
+                  <img (click)="openImage(msg.attachments[0].id,true,'message')" style="width: 43px; margin-top:-8px;"
+                    src="data:image/png;base64,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"
+                    *ngIf="msg.attachments[0].ext == 'IMG'" class="line-breaker " />
+                  <img (click)="openImage(msg.attachments[0].id,true,'message')" style="width: 43px; margin-top:-8px;"
+                    src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAB2AAAAdgB+lymcgAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAASrSURBVHic7ZtLaFxVGMd/333MTCePyaNJm6oNibEmTU0XImIJiqXQhQiuRSoirn0RV3Xlztqq4Eow4LZrEVHTICLiA8VXOwkNQdumJG3avOdxZ+5xESNJvDOZM3Pn3oyTP8xizv3O933nd8/rzpwrlKGpW7lnUeoV4CEgVo6P7VKA60ImR3bN4c+1jMoojO+V8EkubX5++ris+hFnu0S3wtSscwHh1Woks1nZnMrOLsmyC+3AslJciIp1frhflv2MowVgetY57Qqf+ZlAMbkKZhZZy7vE/ymac12eO3XU/sKvGIZWQsKLfgUuRYbAgSbim+5Sp2Hw6Xgy+7JvMTTtH/ArcKmyTYhHtxRZCnlvPOm85Yf/kgCMT6vY17+qVnya8HTVEPlvmYKzl5LO25X6LjoHjCWzL4CMCAwAHEqs35GglXfh+kLBy+dO9ttvlOu7YA+4dMU5L8joRuPDlGEUvVMjlQwHTwBjk87jCK+V69RvCaCKEKhkOHgCEFfOlOMsZI2UA8EbAKq38nxCkTaEQnOA5UMyYUkLgu4+IDRpJlryxFgzACKafVLB2bGJ7Es72dUMgEQZWzBR8sH4hDNczKZmAMRsaIlrP75GXMWHF5UquH2rGQCw3gsOJqAptg4kZm39RC2wDLWljsDA/gnn+UI+a262j5jQFi9mIeRcxUpGWM7gui4GSl4HRr2sa6oHlCrLEFr2QVcThmnIIsLR8T/SfZ62QSe3ocurf/Ht0mVc5XpeNzF4onWI+/cdKjuGZUJXs0rMLHBHmcZTwPvbbULrATOZ+YKNB8jjMpOdrziOaUB7EzGFcdzr+v9yCGxX3CbeGPXe3tcFAIB4hIRXed0AiJikvcrrBoBp4HiV1w2AQtoDEHYCYWsPQNgJhK09AGEnELbqHkBgT4OOm+OWs4hi/QeLlJvZsc5qPsONzG0ADISOSAuW+PvfXGAAvlr4jen0Ta0619JzXEvP/ft9oOEww4ljvuYV2BDoirZVVF+Ag3arP8lsUmAABhu6ebS5v6y6AjyWGKQvfo+/SRHwJDjU2KsNYaPxgw3dVckp8FVAB0K1Gw8hLYOlQAii8RDiPqAYhKAaDyFvhLwgBNl42AV/jAw19mIbFj8tX8UQ4ZHGI1WZ7QspdAAAA/HDDMQPhxK77p8F6h5AIEPgx6UJJlM3yKl8RX4ssTjW0M1Qo39HmKoO4GZmnp9XpnzxlcHhu6Uk98Y6aLOafPFZ9SGQVln/feb981l1APdFO2m3m33z1xVtpytS2ZPlZlV9CFhi8sz+E9zOLeG4uYp8RcSm3W5GRPs9j4IKZBI0xKDTbgkilLbqfhnUAqB2NtnN8hx/WgBylS3joUopuepVrgVgZecfcnex1MdepVoAUk5tQhDhXN8B+xuva9qT4Pwq3FmtmeHwuyg509tR+JWaspbB5cz6RwDZfetIsqfTOuHeJdXTI57HYjbLE4DC+ziJhx1FTrqFIqVIdbfI3VLtC7wxIpP+pRS01ISOtSeAvLij1Oiyb5jykZa9V+GpByM/CLzpT0rBSeCdJ4/YX2rWKayxK7mnDVEjCh4Gip7RDlEphF9Q8u7JfuuibuW/ATkYRQHHdU0fAAAAAElFTkSuQmCC"
+                    *ngIf="msg.attachments[0].ext == 'DOC'" class="line-breaker " />
+                  <img (click)="openImage(msg.attachments[0].id,true,'message')" style="width: 43px; margin-top:-8px;"
+                    src="data:image/png;base64,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"
+                    *ngIf="msg.attachments[0].ext == 'VID'" class="line-breaker " />
+                  <img (click)="openImage(msg.attachments[0].id,true,'message')" style="width: 43px; margin-top:-8px;"
+                    src="data:image/png;base64,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"
+                    *ngIf="msg.attachments[0].ext == 'AUD'" class="line-breaker " />
+                </div>
+                <div class="msg-content">
+                  <p class="line-breaker  ">{{msg.content}}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <br />
+          <br />
+          <br />
+          <br />
+          <br />
+        </div>
+        <br />
+        <br />
+        <br />
+        <br />
+        <br />
+      </div>
+    </ion-content>
+
+    <ion-footer class="footer" *ngIf="chat">
+      <ion-toolbar>
+        <div style="width: 100%; color: white; text-align: center;">
+          <p>{{fileChoose_name}}</p>
+        </div>
+        <div class="containerFooter">
+          <div class="inputConatiner">
+            <ion-input (ionFocus)="scroll(300)" (keyup.enter)="sendChat(numChat,inp_text,fileChoose,fileChoose_name)"
+              class="placeholdertext inputMessage inputBg" type="text" placeholder="Type a message"
+              [(ngModel)]="inp_text" autofocus="true" padding-start></ion-input>
+          </div>
+          <div class="send-button-parent">
+            <ion-button (click)="sendChat(numChat,inp_text,fileChoose,fileChoose_name)" class="sendBtn" color="primary">
+              <ion-icon class="sendBtn-icon" name="send"></ion-icon>
+            </ion-button>
+            <ion-button (click)="selectMedia(numChat)" class="sendBtn" color="primary">
+              <ion-icon class="sendBtn-icon" name="attach"></ion-icon>
+            </ion-button>
+          </div>
+        </div>
+      </ion-toolbar>
+    </ion-footer>
+  </div>
+
+</div>

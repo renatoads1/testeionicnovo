@@ -1,0 +1,96 @@
+ion-header{
+	background-color: #373737 !important;
+	--background: #373737 !important;
+}
+
+ion-toolbar{
+	background-color: #373737 !important;
+	--background: #373737 !important;
+}
+
+.body{
+  width: 80%;
+  margin: 0 auto;
+}
+
+
+.mini{
+  width: 70%;
+  margin: 0 auto;
+}
+
+
+
+	.wrap-interval{
+		width: 100%;
+		background-repeat: repeat;
+		z-index: 100;
+		position: absolute;
+		align-items: center;
+		justify-content: center;
+		.core-float{
+			width: 100%;
+		}
+	}
+
+	.bg-img{
+		position: absolute;
+		top: 0;
+		bottom: 0;
+		right: 0;
+		left: 0;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		z-index: 10;
+		img{
+			height: 100%;
+			max-width: unset;
+			min-width: 100%;
+		}
+	}
+
+	.selection{
+		max-width: 100% !important;
+    width: 100% !important;
+	}
+	.selection-state{
+		max-width: 50% !important;
+    width: 50% !important;
+	}
+
+ion-button{
+	--padding-start: 7px;
+	--padding-end: 7px;
+}
+
+.drop-zone {
+    background-color: #f6f6f6;
+    border: dotted 3px #dedddd;
+    height: 30vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 20px 0;
+}
+
+.file-input-container {
+
+    text-align: right;
+    margin-right: 10px;
+
+    input[type="file"] {
+        display: none;
+    }
+
+    label {
+        border: 1px solid #ccc;
+        border-radius: 10px;
+        padding: 6px 12px;
+        cursor: pointer;
+    }
+}
+
+.nv-file-over {
+    border: dotted 3px red;
+}

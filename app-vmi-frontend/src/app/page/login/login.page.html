@@ -1,0 +1,129 @@
+<ion-content *ngIf="main">
+	<div class="wrap-login offset-top-obj">
+		<div class="wrap-interval">
+			<div text-center class="brand">
+				<div class="pdt-50">
+					<img class="parallax-obj parallax-down-obj" src="assets/images/logo-vmi.png">
+				</div>
+			</div>
+			<div text-center class="main-form">
+				<form (submit)="openLogon()">
+					<ion-item lines="none" class="bg-white bdra-30 shadow-1 bg-light">
+						<ion-input type="text" [(ngModel)]="user" name="user" placeholder="{{ 'USER' | translate }}">
+						</ion-input>
+					</ion-item>
+					<ion-item lines="none" class="bg-white bdra-30 mgt-10 shadow-1 bg-light">
+						<ion-input (keyup.enter)="openLogon()" type="password" [(ngModel)]="password" name="password"
+							placeholder="{{ 'PASSWORD' | translate }}"></ion-input>
+					</ion-item>
+					<br />
+					<ion-item lines="none" class="loginauto">
+						<ion-label class="txt-light fs-15">{{ 'LOGINAUTO' | translate }}</ion-label>
+						<ion-checkbox [(ngModel)]="loginauto" name="loginauto" mode="md" color="primary" checked
+							slot="start"></ion-checkbox>
+					</ion-item>
+					<br />
+					<ion-button expand="block" shape="round" color="primary" class="txt1 mgt-10 spacing2 fw-600"
+						(click)="openLogon()">
+						{{ 'LOGIN' | translate }}
+					</ion-button>
+					<hr />
+					<ion-button mode="ios" size="small" fill="clear" class="txt-light fs-15" type="button"
+						(click)="openRegister()">
+						{{ 'CREATEACC' | translate }}
+					</ion-button>
+					<br />
+					<ion-button mode="ios" size="small" fill="clear" class="txt-light fs-15" type="button"
+						(click)="closePass()">
+						{{ 'FORGOTPASS' | translate }}
+					</ion-button>
+					<hr />
+					<ion-button mode="ios" size="small" fill="clear" class="txt-light fs-15" type="button"
+						(click)="closeKey()">
+						{{ 'ACTIVETOKEN' | translate }}
+					</ion-button>
+				</form>
+
+			</div>
+		</div>
+		<div class="bg-img bckg">
+		</div>
+	</div>
+</ion-content>
+
+<div class="filter" *ngIf="hideFilter">
+	<ion-header class="parallax-obj parallax-translate-obj header-transparent modal">
+		<br />
+		<ion-toolbar>
+			<ion-title color="primary">{{ 'ACTIVETOKEN' | translate }}</ion-title>
+			<ion-buttons slot="end">
+				<ion-button color="primary" (click)="closeKey()">
+					<ion-icon slot="icon-only" name="close"></ion-icon>
+				</ion-button>
+			</ion-buttons>
+		</ion-toolbar>
+	</ion-header>
+
+
+	<ion-content class="modalfilter" *ngIf="hideFilter">
+		<div class="wrap-login offset-top-obj">
+			<div style="margin-top: 20%;">
+				<div class="main-form wrap-interval pdl-50 pdr-50">
+					<ion-label class="txt-light fs-12 uppercase">{{ 'EMAIL' | translate }}</ion-label>
+					<ion-item lines="none" class="bg-white bdra-30 mgt-10 shadow-1 bg-light">
+						<ion-input type="text" [(ngModel)]="email" name="email"></ion-input>
+					</ion-item>
+					<br />
+					<ion-label class="txt-light fs-12 uppercase">{{ 'TOKEN' | translate }}</ion-label>
+					<ion-item lines="none" class="bg-white bdra-30 mgt-10 shadow-1 bg-light">
+						<ion-input type="text" [(ngModel)]="token" name="token"></ion-input>
+					</ion-item>
+					<br />
+					<ion-button shape="round" expand="block" color="primary" fill="solid"
+						class="uppercase spacing1 fw-600" type="submit" (click)="sendMiniToken(token,email)">
+						{{ 'SEND' | translate }}
+					</ion-button>
+					<br />
+				</div>
+			</div>
+			<div class="bg-img bckg">
+			</div>
+		</div>
+	</ion-content>
+</div>
+
+<div class="filter" *ngIf="hidePass">
+	<ion-header class="parallax-obj parallax-translate-obj header-transparent modal">
+		<br />
+		<ion-toolbar>
+			<ion-title color="primary">{{ 'FORGOTPASS' | translate }}</ion-title>
+			<ion-buttons slot="end">
+				<ion-button color="primary" (click)="closePass()">
+					<ion-icon slot="icon-only" name="close"></ion-icon>
+				</ion-button>
+			</ion-buttons>
+		</ion-toolbar>
+	</ion-header>
+
+
+	<ion-content class="modalfilter" *ngIf="hidePass">
+		<div class="wrap-login offset-top-obj">
+			<div style="margin-top: 20%;">
+				<div class="main-form wrap-interval pdl-50 pdr-50">
+					<ion-label class="txt-light fs-12 uppercase">{{ 'EMAIL' | translate }}</ion-label>
+					<ion-item lines="none" class="bg-white bdra-30 mgt-10 shadow-1 bg-light">
+						<ion-input type="text" [(ngModel)]="email_forget" name="email_forget"></ion-input>
+					</ion-item>
+					<br />
+					<ion-button shape="round" expand="block" color="primary" fill="solid"
+						class="uppercase spacing1 fw-600" type="submit" (click)="sendPass(email_forget)">
+						{{ 'SEND' | translate }}
+					</ion-button>
+					<br />
+				</div>
+			</div>
+			<div class="bg-img bckg">
+			</div>
+		</div>
+	</ion-content>
+</div>

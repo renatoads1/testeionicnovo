@@ -1,0 +1,52 @@
+<ion-header class="parallax-obj parallax-translate-obj">
+  <br />
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button text="" color="primary" icon="ios-arrow-round-back"></ion-back-button>
+    </ion-buttons>
+    <ion-title color="primary">{{ 'CREATETICKET' | translate }}</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <div class="body">
+    <br />
+
+    <ion-label position="stacked">{{ 'TITLE' | translate }}:</ion-label>
+    <br />
+    <small>{{ 'REQUIREDFIELD' | translate }}</small>
+    <ion-item lines="none" class="bg-white bdra-30 mgt-10 shadow-1 bg-light">
+      <ion-input [(ngModel)]="title" name="title"></ion-input>
+    </ion-item>
+    <br />
+
+    <ion-label position="stacked">{{ 'EQUIPMENT' | translate }}:</ion-label>
+    <br />
+    <small>{{ 'REQUIREDFIELD' | translate }}</small>
+    <ion-item lines="none" class="bg-white bdra-30 mgt-10 shadow-1 bg-light">
+      <ion-select class="selection" interface="popover" [(ngModel)]="device" name="device">
+        <ion-select-option value="{{equipment.serial_number}}" *ngFor="let equipment of result">
+          {{equipment.serial_number}}</ion-select-option>
+      </ion-select>
+    </ion-item>
+    <br />
+
+    <ion-label position="stacked">{{ 'PROBLEM' | translate }}:</ion-label>
+    <br />
+    <small>{{ 'REQUIREDFIELD' | translate }}</small>
+    <ion-item lines="none" class="bg-white bdra-30 mgt-10 shadow-1 bg-light">
+      <ion-textarea [(ngModel)]="description" name="description" rows="5"></ion-textarea>
+    </ion-item>
+    <br />
+    <app-ticket-multi-file-upload></app-ticket-multi-file-upload>
+    <br />
+    <br />
+    <ion-button expand="block" shape="round" color="primary" class="txt1 mgt-10 spacing2 fw-600 mini" type="submit"
+      (click)="create()">
+      {{ 'SAVE' | translate }}
+    </ion-button>
+    <br />
+    <br />
+  </div>
+
+</ion-content>

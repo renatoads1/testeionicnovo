@@ -1,0 +1,20 @@
+<div class="file-input-container">
+  <label>
+    <input type="file" name="attachments" [(ngModel)]="attachments" ng ng2FileSelect [uploader]="uploader" multiple />
+    <ion-icon slot="icon-only" name="ios-attach"></ion-icon>
+
+  </label>
+</div>
+<br />
+<ion-list>
+  <ion-item *ngFor="let item of uploader.queue">
+    <ion-label>
+      {{ item?.file?.name }}
+    </ion-label>
+    <ion-note slot="end">
+      <ion-button color="danger" fill="solid" class="fw-100" type="submit" (click)="clear(i)">
+        <ion-icon slot="icon-only" name="close"></ion-icon>
+      </ion-button>
+    </ion-note>
+  </ion-item>
+</ion-list>

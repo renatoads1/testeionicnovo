@@ -1,0 +1,155 @@
+<ion-header class="parallax-obj parallax-translate-obj">
+  <br />
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button text="" color="primary" icon="ios-arrow-round-back"></ion-back-button>
+    </ion-buttons>
+    <ion-title color="primary">{{ 'USER' | translate }}</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <div>
+    <div class="bg-img bckg">
+    </div>
+    <div class="wrap-interval pdl-50 pdr-50">
+      <div class="core-float">
+        <div class="brand">
+          <p class="fs-12 pdl-30 pdr-30">{{ 'REGISTRATIONSUB2' | translate }}</p>
+        </div>
+        <br />
+				<div class="main-form">
+					<form novalidate>
+						<ion-label class="txt-dark fs-12 uppercase">{{ 'NAME' | translate }}:</ion-label>
+						<ion-item lines="none" class="bdra-30 shadow-2 bg-dark mgt-5">
+							<ion-input type="text" [(ngModel)]="login" name="login"
+								placeholder="{{ 'SUBNAME' | translate }}"></ion-input>
+						</ion-item>
+						<ion-progress-bar *ngIf="loginlength == true" color="danger" value="1"></ion-progress-bar>
+						<p *ngIf="logininput == true" class="fs-12 txt-dark pdl-30 pdr-30">
+							{{ 'EMPTYINPUT' | translate }}</p>
+
+						<p *ngIf="loginlength == true" class="fs-12 txt-dark pdl-30 pdr-30">{{ 'NAMEERR' | translate }}
+						</p>
+						<br />
+						<ion-label class="txt-dark fs-12 uppercase">{{ 'USER' | translate }}:</ion-label>
+						<ion-item lines="none" class="bdra-30 shadow-2 bg-dark mgt-5">
+							<ion-input readonly type="text" [(ngModel)]="user" name="user"
+								placeholder="{{ 'SUBUSER' | translate }}"></ion-input>
+						</ion-item>
+						<ion-progress-bar *ngIf="userlength == true || userspace == true" color="danger" value="1">
+						</ion-progress-bar>
+						<p *ngIf="userinput == true" class="fs-12 txt-dark pdl-30 pdr-30">
+							{{ 'EMPTYINPUT' | translate }}</p>
+
+						<p *ngIf="userlength == true || userspace == true" class="fs-12 txt-dark pdl-30 pdr-30">
+							{{ 'USERERR' | translate }}</p>
+						<br />
+						<ion-label class="txt-dark fs-12 uppercase">{{ 'COMPANY' | translate }}:</ion-label>
+						<ion-item lines="none" class="bdra-30 shadow-2 bg-dark mgt-5">
+							<ion-select class="selection" interface="popover" (click)="getCompany(1)"
+								[(ngModel)]="empresa" name="empresa" placeholder="{{ 'SUBCOMPANY' | translate }}">
+								<ion-select-option value="{{company.id}}" *ngFor="let company of resultCompany">
+									{{company.name}}</ion-select-option>
+							</ion-select>
+						</ion-item>
+						<ion-progress-bar *ngIf="empresalength == true" color="danger" value="1"></ion-progress-bar>
+						<p *ngIf="empresainput == true" class="fs-12 txt-dark pdl-30 pdr-30">
+							{{ 'EMPTYINPUT' | translate }}</p>
+
+						<p *ngIf="empresalength == true" class="fs-12 txt-dark pdl-30 pdr-30">
+							{{ 'COMPANYERR' | translate }}</p>
+						<br />
+
+						<ion-label class="txt-dark fs-12 uppercase">{{ 'PHONE' | translate }}:</ion-label>
+						<ion-item lines="none" class="bdra-30 shadow-2 bg-dark mgt-5">
+							<ion-input type="text" simpleMask="+99999999999999999" [clearIfNotMatch]="false"
+								[(ngModel)]="phone" name="phone" placeholder="{{ 'SUBPHONE' | translate }}"></ion-input>
+						</ion-item>
+						<ion-progress-bar *ngIf="phonelength == true" color="danger" value="1"></ion-progress-bar>
+						<p *ngIf="phoneinput == true" class="fs-12 txt-dark pdl-30 pdr-30">
+							{{ 'EMPTYINPUT' | translate }}</p>
+
+						<p *ngIf="phonelength == true" class="fs-12 txt-dark pdl-30 pdr-30">
+							{{ 'PHONEERR' | translate }}</p>
+						<ion-label class="fs-12 uppercase" color="primary">{{ 'TIPPHONE' | translate }}:</ion-label>
+						<br />
+						<br />
+						<ion-label class="txt-dark fs-12 uppercase">{{ 'COUNTRY' | translate }}:</ion-label>
+						<ion-item *ngIf="language =='en'" lines="none" class="bdra-30 shadow-2 bg-dark mgt-5">
+							<ionic-selectable [searchFailText]="noitem" [searchPlaceholder]="search" [closeButtonText]="cancel" [(ngModel)]="country" name="country" (click)="getAllCountries()" [items]="resultCountry" itemTextField="name"
+								[canSearch]="true" (onChange)="selectCountry()">
+							</ionic-selectable>
+						</ion-item>
+						<ion-item *ngIf="language=='pt'" lines="none" class="bdra-30 shadow-2 bg-dark mgt-5">
+							
+							<ionic-selectable [searchFailText]="noitem" [searchPlaceholder]="search" [closeButtonText]="cancel" [(ngModel)]="country" name="country" (click)="getAllCountries()" [items]="resultCountry" itemTextField="name"
+								[canSearch]="true" (onChange)="selectCountry()">
+							</ionic-selectable>
+
+						</ion-item>
+						<ion-item *ngIf="language=='es'" lines="none" class="bdra-30 shadow-2 bg-dark mgt-5">
+							
+							<ionic-selectable [searchFailText]="noitem" [searchPlaceholder]="search" [closeButtonText]="cancel" [(ngModel)]="country" name="country" (click)="getAllCountries()" [items]="resultCountry" itemTextField="name"
+								[canSearch]="true" (onChange)="selectCountry()">
+							</ionic-selectable>
+
+						</ion-item>
+						<br />
+						<ion-label *ngIf="country" class="txt-dark fs-12 uppercase">{{ 'REGION' | translate }}:
+						</ion-label>
+						<ion-item *ngIf="country" lines="none" class="bdra-30 shadow-2 bg-dark mgt-5">
+							
+							<ionic-selectable [searchFailText]="noitem" [searchPlaceholder]="search" [closeButtonText]="cancel" [(ngModel)]="region" name="region" (click)="getAllRegion()" [items]="resultRegion" itemTextField="region"
+								[canSearch]="true" (onChange)="selectRegion()">
+							</ionic-selectable>
+
+						</ion-item>
+						<br *ngIf="country" />
+						<ion-label *ngIf="region" class="txt-dark fs-12 uppercase">{{ 'CITY' | translate }}:
+						</ion-label>
+						<ion-item *ngIf="region" lines="none" class="bdra-30 shadow-2 bg-dark mgt-5">
+							
+							<ionic-selectable [searchFailText]="noitem" [searchPlaceholder]="search" [closeButtonText]="cancel" [(ngModel)]="city" name="city" (click)="getAllCity()" [items]="resultCity" itemTextField="city"
+								[canSearch]="true" (onChange)="selectCity()">
+							</ionic-selectable>
+							
+						</ion-item>
+						<br *ngIf="region" />
+						<ion-label class="txt-dark fs-12 uppercase">{{ 'ADDRESS' | translate }}:</ion-label>
+						<ion-item lines="none" class="bdra-30 shadow-2 bg-dark mgt-5">
+							<ion-input type="text" [(ngModel)]="address" name="address"
+								placeholder="{{ 'ADDRESS' | translate }}"></ion-input>
+						</ion-item>
+						<br />
+						<ion-progress-bar *ngIf="empresalength == true" color="danger" value="1"></ion-progress-bar>
+						<p *ngIf="empresainput == true" class="fs-12 txt-dark pdl-30 pdr-30">
+							{{ 'EMPTYINPUT' | translate }}</p>
+
+						<p *ngIf="empresalength == true" class="fs-12 txt-dark pdl-30 pdr-30">
+							{{ 'COMPANYERR' | translate }}</p>
+						<br *ngIf="empresalength == true" />
+						<ion-label class="txt-dark fs-12 uppercase">{{ 'EMAIL' | translate }}:</ion-label>
+						<ion-item lines="none" class="bdra-30 shadow-2 bg-dark mgt-5">
+							<ion-input readonly type="email" [(ngModel)]="email" name="email"
+								placeholder="{{ 'SUBEMAIL' | translate }}"></ion-input>
+						</ion-item>
+						<ion-progress-bar *ngIf="emailarr == true || emaildot == true" color="danger" value="1">
+						</ion-progress-bar>
+						<p *ngIf="emailinput == true" class="fs-12 txt-dark pdl-30 pdr-30">
+							{{ 'EMPTYINPUT' | translate }}</p>
+
+						<p *ngIf="emailarr == true || emaildot == true" class="fs-12 txt-dark pdl-30 pdr-30">
+							{{ 'EMAILERR' | translate }}</p>
+						<br />
+						<ion-button shape="round" expand="block" color="primary" fill="solid"
+							class="uppercase spacing1 fw-600" type="submit" (click)="sendPostRequest()">
+							{{ 'SAVE' | translate }}
+						</ion-button>
+					</form>
+					<br />
+				</div>
+			</div>
+		</div>
+	</div>
+</ion-content>

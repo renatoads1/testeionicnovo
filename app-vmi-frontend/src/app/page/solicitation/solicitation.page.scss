@@ -1,0 +1,151 @@
+ion-header{
+	background-color: #373737 !important;
+	--background: #373737 !important;
+}
+
+ion-toolbar{
+	background-color: #373737 !important;
+	--background: #373737 !important;
+}
+
+@media (max-width: 600px) {
+  .segment-wrap {
+    flex-wrap: wrap;
+
+    .segment-button {
+      flex: 1 0 25%;
+    }
+
+    .segment-button:nth-child(-n+4) {
+      border-bottom: none;
+    }
+
+    .segment-button:first-of-type,
+    .segment-button:last-of-type {
+      border-bottom-left-radius: 0;
+      border-top-right-radius: 0;
+    }
+
+    .segment-button:nth-child(4) {
+      border-top-right-radius: 4px;
+    }
+
+    .segment-button:nth-child(5) {
+      border-left-width: 1px;
+      border-bottom-left-radius: 4px;
+    }
+  }
+}
+
+
+
+.button-filter{
+  border: 0.1px solid;
+  border-radius: 5px;
+  border-color: #fff;
+  color: #fff;
+  background-color: #373737;
+  font-size: 14px;
+}
+
+.selection{
+  max-width: 53% !important;
+  width: 53% !important;
+  font-size: 14px;
+  text-align: left;
+}
+
+.iontype{
+  position: absolute;
+		opacity: 0;
+		width: 0px;
+		height: 0px;
+		margin-top: 0%;
+		margin-left: 0%;
+		margin-right: 0%;
+}
+
+.tips{
+	position: absolute;
+	z-index: 100;
+	background-color: #373737;
+	width: 300px;
+	height: 375px;
+	left: 50%;
+  top: 57%;
+  transform: translate(-50%, -50%);
+	border: 0px solid black;
+	border-radius: 10px;
+	.image{
+		width: 80%;
+		margin-left:10%;
+		margin-right:10%;
+	}
+	ion-item{
+		align-items: center;
+		align-content: center;
+		text-align: center;
+		background-color: #373737 !important;
+		--background: #373737 !important;
+	}
+	ion-label{
+		color: white;
+	}
+	h2{
+		margin-top: 5px;
+		color: #EEBB00;
+	}
+	p{
+		margin-left: 10%;
+		margin-right: 10%;
+		color: white;
+	}
+	ion-button{
+		margin-left: 10%;
+		margin-right: 10%;
+	}
+
+}
+
+
+
+.pagination {
+  display: inline-block;
+	bottom: 0;
+	width: 100%;
+	align-items: center;
+	align-content: center;
+	text-align: center;
+	display: flex;
+	justify-content: center;
+}
+
+.pagination a {
+  color: black;
+  float: left;
+  padding: 8px 16px;
+  text-decoration: none;
+}
+
+.pagination a.active {
+  background-color: #4CAF50;
+  color: white;
+}
+
+.pagination a:hover:not(.active) {background-color: #ddd;}
+
+.select{
+	opacity: 0;
+	position: absolute;
+	width: 100%;
+	height: 100%;
+}
+
+.reason-button{
+	right: 0;
+	width: 50px;
+	margin-right: 3%;
+	margin-left: 13px;
+	border: 0px solid white;
+	border-radius: 20px;
+}

@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "270970062377",
+    "firebase_url": "https://vmiclient.firebaseio.com",
+    "project_id": "vmiclient",
+    "storage_bucket": "vmiclient.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:270970062377:android:5993246cd804487d65be38",
+        "android_client_info": {
+          "package_name": "br.com.vmi.clients"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "270970062377-e14bsl7805neh3ukn81p3ab1d10dnc59.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBKtYPZtoQH6MGWHl_ppVclFIJCWrx6s5o"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "270970062377-e14bsl7805neh3ukn81p3ab1d10dnc59.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

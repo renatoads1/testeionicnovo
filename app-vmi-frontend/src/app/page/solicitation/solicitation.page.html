@@ -1,0 +1,242 @@
+<div class="ion-page" main>
+  <ion-header class="parallax-obj parallax-translate-obj">
+    <br />
+    <ion-toolbar>
+      <ion-buttons slot="start">
+        <ion-menu-button color="primary"></ion-menu-button>
+      </ion-buttons>
+      <ion-title color="primary">{{ 'SOLICITATIONS' | translate }} </ion-title>
+      <ion-buttons slot="end">
+        <ion-button *ngIf="segment == 'user'" color="primary" (click)="openAdd()">
+          <ion-icon slot="icon-only" name="ios-add"></ion-icon>
+        </ion-button>
+        <ion-button *ngIf="segment == 'company'" color="primary" (click)="addCompany()">
+          <ion-icon slot="icon-only" name="ios-add"></ion-icon>
+        </ion-button>
+      </ion-buttons>
+    </ion-toolbar>
+  </ion-header>
+  <ion-content>
+    <ion-segment mode="md" class="segment-wrap" color="secondary" [(ngModel)]="segment" name="segment">
+      <ion-segment-button mode="md" value="user" (click)="resetBadge()" (click)="getUsers(1,'')">
+        <ion-label>{{ 'NEW' | translate }} {{ 'USER' | translate }}  <ion-badge color="danger">{{solicitation}}</ion-badge>
+        </ion-label>
+      </ion-segment-button>
+      <ion-segment-button *ngIf="roles == 'admin'" mode="md" value="admin" (click)="getAdmin(1,'')">
+        <ion-label>{{ 'ADMIN' | translate }}</ion-label>
+      </ion-segment-button>
+      <ion-segment-button mode="md" value="technician" (click)="getTechnicians(1,'')">
+        <ion-label>{{ 'TECHNICIANS' | translate }}</ion-label>
+      </ion-segment-button>
+      <ion-segment-button mode="md" value="client" (click)="getClients(1,'')">
+        <ion-label>{{ 'CLIENTS' | translate }}</ion-label>
+      </ion-segment-button>
+      <ion-segment-button *ngIf="parent == 'admin'" mode="md" value="company" (click)="getCompany(1,10)">
+        <ion-label>{{ 'COMPANY' | translate }}</ion-label>
+      </ion-segment-button>
+    </ion-segment>
+    <br />
+
+    <div [ngSwitch]="segment">
+      <ion-list *ngSwitchCase="'user'">
+        <ion-refresher slot="fixed" (ionRefresh)="doRefresh($event)" (ionRefresh)="getUsers(pageselected,'')">
+          <ion-refresher-content>
+          </ion-refresher-content>
+        </ion-refresher>
+        <p style="text-align: center;" *ngIf="resultUsers == ''">{{ 'NOITEM' | translate }}</p>
+        <ion-item-sliding #sliding id="sliding"  *ngFor="let user of resultUsers">
+          <ion-item>
+            <ion-label class="iontype">{{ 'SELECT' | translate }}</ion-label>
+            <ion-label>
+              <h2>{{ 'USER' | translate}}: {{ user.username }}</h2>
+              <p>{{ 'COMPANY' | translate}}: {{ user.company.name }}</p>
+              <p>{{ 'ADDRESS' | translate}}: {{ user.address }}</p>
+              <p>{{ 'PHONE' | translate}}: {{ user.phone_number }}</p>
+            </ion-label>
+            <ion-buttons slot="end">
+              <ion-button color="tertiary" (click)="openSlide(sliding)">
+                <ion-icon slot="icon-only" name="more"></ion-icon>
+              </ion-button>
+            </ion-buttons>
+            <br />
+          </ion-item>
+          <ion-item-options>
+            <ion-item-option *ngIf="parent == 'admin'" color="primary"
+              (click)="editItem(user.id,user.name,user.username,user.phone_number,user.address,user.latitude,user.logitude,user.company.name,user.email,user.role,user.country,user.region,user.city)">
+              {{ 'EDIT' | translate }}
+            </ion-item-option>
+            <ion-item-option color="success">
+              {{ 'ACCEPT' | translate }}
+              <ion-select interface="popover" class="select" (click)="user.role=''" (ionChange)="sendAccept(user.username, user.role)"
+                [(ngModel)]="user.role" name="user.role">
+                <ion-select-option value="admin">{{ 'ADMIN' | translate }}</ion-select-option>
+                <ion-select-option value="technician">{{ 'TECHNICIAN' | translate }}</ion-select-option>
+                <ion-select-option value="client">{{ 'CLIENT' | translate }}</ion-select-option>
+              </ion-select>
+            </ion-item-option>
+          </ion-item-options>
+        </ion-item-sliding>
+        <h6 *ngIf="resultUsers != ''" style="text-align: center;">{{ 'PAGE' | translate }}</h6>
+        <ion-segment class="pagination segment-wrap" [(ngModel)]="pageselected" name="pageselected" color="primary">
+          <ion-segment-button value="{{npage}}" *ngFor="let npage of page" (click)="getUsers(npage,'')">
+            <a>{{npage}}</a>
+          </ion-segment-button>
+        </ion-segment>
+      </ion-list>
+
+      <ion-list *ngSwitchCase="'admin'">
+        <ion-refresher slot="fixed" (ionRefresh)="doRefresh($event)" (ionRefresh)="getAdmin(pageselected,'')">
+          <ion-refresher-content>
+          </ion-refresher-content>
+        </ion-refresher>
+        <p style="text-align: center;" *ngIf="resultAdmin == ''">{{ 'NOITEM' | translate }}</p>
+        <ion-item-sliding #sliding id="sliding"  *ngFor="let user of resultAdmin">
+          <ion-item>
+            <ion-label class="iontype">{{ 'USERTYPE' | translate }}</ion-label>
+            <ion-label>
+              <h2>{{ 'USER' | translate}}: {{ user.username }}</h2>
+              <p>{{ 'ADDRESS' | translate}}: {{ user.address }}</p>
+              <p>{{ 'PHONE' | translate}}: {{ user.phone_number }}</p>
+            </ion-label>
+            <ion-buttons slot="end">
+              <ion-button color="tertiary" (click)="openSlide(sliding)">
+                <ion-icon slot="icon-only" name="more"></ion-icon>
+              </ion-button>
+            </ion-buttons>
+          </ion-item>
+          <ion-item-options>
+            <ion-item-option color="primary"
+              (click)="editItem(user.id,user.name,user.username,user.phone_number,user.address,user.latitude,user.logitude,user.company.name,user.email,user.role)">
+              {{ 'EDIT' | translate }}
+            </ion-item-option>
+            <ion-item-option color="danger" (click)="presentAlertDesative(user.id,user.role)">
+              {{ 'DISABLE' | translate }}
+            </ion-item-option>
+          </ion-item-options>
+        </ion-item-sliding>
+        <h6 *ngIf="resultAdmin != ''" style="text-align: center;">{{ 'PAGE' | translate }}</h6>
+        <ion-segment class="pagination segment-wrap" [(ngModel)]="pageselected" name="pageselected" color="primary">
+          <ion-segment-button value="{{npage}}" *ngFor="let npage of page" (click)="getAdmin(npage,'')">
+            <a>{{npage}}</a>
+          </ion-segment-button>
+        </ion-segment>
+      </ion-list>
+
+      <ion-list *ngSwitchCase="'technician'">
+        <ion-refresher slot="fixed" (ionRefresh)="doRefresh($event)" (ionRefresh)="getTechnicians(pageselected,'')">
+          <ion-refresher-content>
+          </ion-refresher-content>
+        </ion-refresher>
+        <p style="text-align: center;" *ngIf="resultTechnicians == ''">{{ 'NOITEM' | translate }}</p>
+        <ion-item-sliding #sliding id="sliding"  *ngFor="let user of resultTechnicians">
+          <ion-item>
+            <ion-label class="iontype">{{ 'USERTYPE' | translate }}</ion-label>
+            <ion-label>
+              <h2>{{ 'USER' | translate}}: {{ user.username }}</h2>
+              <p>{{ 'COMPANY' | translate}}: {{ user.company.name }}</p>
+              <p>{{ 'ADDRESS' | translate}}: {{ user.address }}</p>
+              <p>{{ 'PHONE' | translate}}: {{ user.phone_number }}</p>
+            </ion-label>
+            <ion-buttons slot="end">
+              <ion-button color="tertiary" (click)="openSlide(sliding)">
+                <ion-icon slot="icon-only" name="more"></ion-icon>
+              </ion-button>
+            </ion-buttons>
+          </ion-item>
+          <ion-item-options>
+            <ion-item-option color="primary"
+              (click)="editItem(user.id,user.name,user.username,user.phone_number,user.address,user.latitude,user.logitude,user.company.name,user.email,user.role)">
+              {{ 'EDIT' | translate }}
+            </ion-item-option>
+            <ion-item-option color="danger" (click)="presentAlertDesative(user.id,user.role)">
+              {{ 'DISABLE' | translate }}
+            </ion-item-option>
+          </ion-item-options>
+        </ion-item-sliding>
+        <h6 *ngIf="resultTechnicians != ''" style="text-align: center;">{{ 'PAGE' | translate }}</h6>
+        <ion-segment class="pagination segment-wrap" [(ngModel)]="pageselected" name="pageselected" color="primary">
+          <ion-segment-button value="{{npage}}" *ngFor="let npage of page" (click)="getTechnicians(npage,'')">
+            <a>{{npage}}</a>
+          </ion-segment-button>
+        </ion-segment>
+      </ion-list>
+
+      <ion-list *ngSwitchCase="'client'">
+        <ion-refresher slot="fixed" (ionRefresh)="doRefresh($event)" (ionRefresh)="getClients(pageselected,'')">
+          <ion-refresher-content>
+          </ion-refresher-content>
+        </ion-refresher>
+        <p style="text-align: center;" *ngIf="resultClients == ''">{{ 'NOITEM' | translate }}</p>
+        <ion-item-sliding #sliding id="sliding"  *ngFor="let user of resultClients">
+          <ion-item>
+            <ion-label class="iontype">{{ 'USERTYPE' | translate }}</ion-label>
+            <ion-label>
+              <h2>{{ 'USER' | translate}}: {{ user.username }}</h2>
+              <p>{{ 'COMPANY' | translate}}: {{ user.company.name }}</p>
+              <p>{{ 'ADDRESS' | translate}}: {{ user.address }}</p>
+              <p>{{ 'PHONE' | translate}}: {{ user.phone_number }}</p>
+            </ion-label>
+            <ion-buttons slot="end">
+              <ion-button color="tertiary" (click)="openSlide(sliding)">
+                <ion-icon slot="icon-only" name="more"></ion-icon>
+              </ion-button>
+            </ion-buttons>
+          </ion-item>
+          <ion-item-options>
+            <ion-item-option color="primary"
+              (click)="editItem(user.id,user.name,user.username,user.phone_number,user.address,user.latitude,user.logitude,user.company.name,user.email,user.role)">
+              {{ 'EDIT' | translate }}
+            </ion-item-option>
+            <ion-item-option color="danger" (click)="presentAlertDesative(user.id,user.role)">
+              {{ 'DISABLE' | translate }}
+            </ion-item-option>
+          </ion-item-options>
+        </ion-item-sliding>
+        <h6 *ngIf="resultClients != ''" style="text-align: center;">{{ 'PAGE' | translate }}</h6>
+        <ion-segment class="pagination segment-wrap" [(ngModel)]="pageselected" name="pageselected" color="primary">
+          <ion-segment-button value="{{npage}}" *ngFor="let npage of page" (click)="getClients(npage,'')">
+            <a>{{npage}}</a>
+          </ion-segment-button>
+        </ion-segment>
+      </ion-list>
+
+      <ion-list *ngSwitchCase="'company'">
+        <ion-refresher slot="fixed" (ionRefresh)="doRefresh($event)" (ionRefresh)="getCompany(pageselected)">
+          <ion-refresher-content>
+          </ion-refresher-content>
+        </ion-refresher>
+        <p style="text-align: center;" *ngIf="resultCompany == ''">{{ 'NOITEM' | translate }}</p>
+        <ion-item-sliding #sliding id="sliding"  *ngFor="let company of resultCompany">
+          <ion-item>
+            <ion-label>
+              <h2>{{ company.name }}</h2>
+              <p>{{company.parent.name}}</p>
+            </ion-label>      
+            <ion-note *ngIf="company.state == 'active'" slot="end">
+              {{ 'ACTIVE' | translate }}
+            </ion-note>
+            <ion-note *ngIf="company.state == 'inactive'" slot="end">
+              {{ 'INACTIVE' | translate }}
+            </ion-note>
+            <ion-buttons slot="end">
+              <ion-button color="tertiary" (click)="openSlide(sliding)">
+                <ion-icon slot="icon-only" name="more"></ion-icon>
+              </ion-button>
+            </ion-buttons>
+          </ion-item>
+          <ion-item-options>
+            <ion-item-option color="danger" (click)="presentCompanyDelete(company.id)">
+              {{ 'DELETE' | translate }}
+            </ion-item-option>
+          </ion-item-options>
+        </ion-item-sliding>
+        <h6 *ngIf="resultCompany != ''" style="text-align: center;">{{ 'PAGE' | translate }}</h6>
+        <ion-segment class="pagination segment-wrap" [(ngModel)]="pageselected" name="pageselected" color="primary">
+          <ion-segment-button value="{{npage}}" *ngFor="let npage of page" (click)="getCompany(npage,10)">
+            <a>{{npage}}</a>
+          </ion-segment-button>
+        </ion-segment>
+      </ion-list>
+    </div>
+  </ion-content>
+</div>

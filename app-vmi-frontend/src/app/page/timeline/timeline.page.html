@@ -1,0 +1,79 @@
+<div class="ion-page" main>
+  <ion-header class="parallax-obj parallax-translate-obj mobile">
+    <br />
+    <ion-toolbar>
+      <ion-buttons slot="start">
+        <ion-menu-button color="primary"></ion-menu-button>
+      </ion-buttons>
+      <ion-title color="primary">FEED</ion-title>
+      <ion-buttons slot="end">
+        <ion-button color="primary" (click)="openAddFeed()">
+          <ion-icon slot="icon-only" name="ios-add"></ion-icon>
+        </ion-button>
+      </ion-buttons>
+    </ion-toolbar>
+  </ion-header>
+  <ion-content>
+    <ion-refresher slot="fixed" (ionRefresh)="doRefresh($event)" (ionRefresh)="search(null,1,10)">
+      <ion-refresher-content>
+      </ion-refresher-content>
+    </ion-refresher>
+
+    <ion-list>
+      <div class="wrap-interval pdl-30 pdr-30">
+        <div class="core-float">
+          <br />
+          <ion-label class="txt-dark fs-12 uppercase">{{ 'KEYWORDS' | translate }}:</ion-label>
+          <br />
+          <div class="bg-white mgt-10 shadow-1 bg-light">
+            <ion-chip class="tag" *ngFor="let word of keywords ; let i= index">
+              {{ word }}
+              <ion-icon name="close-circle" (click)="removeKey(i)"></ion-icon>
+            </ion-chip>
+            <ion-input type="text" [(ngModel)]="keyword" name="keyword" (ionChange)="addKeyword(keyword.trimStart())"
+              (ionBlur)="addKeywordOff(keyword.trimStart())"></ion-input>
+          </div>
+          <br />
+          <ion-button shape="round" expand="block" color="primary" fill="solid" class="uppercase spacing1 fw-600"
+            type="submit" (click)="search(keywords,1,10)">
+            {{ 'SEARCH' | translate }}
+          </ion-button>
+          <br />
+          <br />
+        </div>
+      </div>
+      <p style="text-align: center;" *ngIf="result == ''">{{ 'NOITEM' | translate }}</p>
+      
+      <ion-card *ngFor="let timeline of result">
+        <ion-card-header>
+          
+          <ion-card-subtitle>{{ timeline.user.name }}</ion-card-subtitle>
+          <ion-card-title>{{ timeline.title }}</ion-card-title>
+          
+        </ion-card-header>
+        <ion-card-content>
+          {{ timeline.content }}
+        </ion-card-content>
+        <ion-card-content>
+          <ion-button *ngIf="timeline.attachments[0]" (click)="showThumbs(timeline.attachments,false,timeline.id)">
+            {{ 'ATTACHMENTS' | translate }}
+          </ion-button>
+          <div class="row">
+            <div class="column" *ngFor=" let attachment of timeline.attachments ; let i = index">
+              <img *ngIf="timeline.id == timelineselect" src="{{thumb[i]}}" (click)="openFile(timeline.id,true)" />
+            </div>
+          </div>
+        </ion-card-content>
+      </ion-card>
+    
+    </ion-list>
+    <ion-infinite-scroll *ngIf="pageselected <= page" threshold="100px" (ionInfinite)="loadData($event)">
+      <ion-infinite-scroll-content *ngIf="pageselected <= page"
+        loadingSpinner="bubbles"
+        loadingText="{{ 'LOADING' | translate }}">
+      </ion-infinite-scroll-content>
+    </ion-infinite-scroll>
+
+  </ion-content>
+
+</div>

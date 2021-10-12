@@ -1,0 +1,56 @@
+<div class="ion-page" main>
+  <ion-header class="parallax-obj parallax-translate-obj mobile">
+    <br />
+    <ion-toolbar>
+      <ion-buttons slot="start">
+        <ion-menu-button color="primary"></ion-menu-button>
+      </ion-buttons>
+      <ion-title color="primary">{{ 'PIECES' | translate }}</ion-title>
+      <ion-buttons slot="end">
+        <ion-button *ngIf="parent == 'admin'" color="primary" (click)="openAdd()">
+          <ion-icon slot="icon-only" name="ios-add"></ion-icon>
+        </ion-button>
+      </ion-buttons>
+    </ion-toolbar>
+  </ion-header>
+  <ion-content>
+    <ion-refresher slot="fixed" (ionRefresh)="doRefresh($event)" (ionRefresh)="getData(pageselected)">
+      <ion-refresher-content>
+      </ion-refresher-content>
+    </ion-refresher>
+
+    <br />
+
+
+    <div >
+      
+      <ion-list >
+        <p style="text-align: center;" *ngIf="result == ''">{{ 'NOITEM' | translate }}</p>
+        <ion-item-sliding #sliding id="sliding" *ngFor="let piece of result">
+          <ion-item>
+            <ion-label>
+              <h2>{{ piece.name }}</h2>
+            </ion-label>
+            <ion-buttons slot="end">
+              <ion-button color="tertiary" (click)="openSlide(sliding)">
+                <ion-icon slot="icon-only" name="more"></ion-icon>
+              </ion-button>
+            </ion-buttons>
+          </ion-item>
+          <ion-item-options>
+            <ion-item-option *ngIf="parent == 'admin'" color="danger" (click)="presentAlertDelete(piece.id)">
+              {{ 'DELETE' | translate }}
+            </ion-item-option>
+          </ion-item-options>
+        </ion-item-sliding>
+        <h6 *ngIf="result != ''" style="text-align: center;">{{ 'PAGE' | translate }}</h6>
+      <ion-segment class="pagination segment-wrap" [(ngModel)]="pageselected" name="pageselected" color="primary">
+        <ion-segment-button value="{{npage}}" *ngFor="let npage of page" (click)="getData(npage)">
+          <a>{{npage}}</a>
+        </ion-segment-button>
+      </ion-segment>
+      </ion-list>
+
+    </div>
+  </ion-content>
+</div>

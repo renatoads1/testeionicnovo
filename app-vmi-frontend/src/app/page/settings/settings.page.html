@@ -1,0 +1,37 @@
+<div class="ion-page" main>
+  <ion-header class="parallax-obj parallax-translate-obj mobile">
+    <ion-toolbar>
+      <br />
+      <br />
+      <ion-buttons slot="start">
+        <ion-menu-button color="primary"></ion-menu-button>
+      </ion-buttons>
+      <ion-title color="primary">{{ 'SETTINGS' | translate }}</ion-title>
+      <br />
+      <br />
+    </ion-toolbar>
+    <ion-list lines="none">
+      <ion-item>
+        <ion-icon name="unlock" color="light" slot="start" magrin-end></ion-icon>
+        <ion-label>
+          <h2>{{ 'LOGINAUTO' | translate }}</h2>
+        </ion-label>
+        <ion-toggle slot="end" [(ngModel)]="auto" name="auto"></ion-toggle>
+      </ion-item>
+      <ion-item>
+        <ion-icon name="text" color="light" slot="start" magrin-end></ion-icon>
+        <ion-label>
+          <h2>{{ 'LANGUAGE' | translate }}</h2>
+        </ion-label>
+        <ion-select interface="popover" [(ngModel)]="select" name="select" value="{{select}}" ok-text="Okay"
+          cancel-text="Dismiss" (ionChange)="changeLang($event)">
+          <ion-select-option *ngFor="let lang of langs" [value]="lang">
+            {{ lang }}
+          </ion-select-option>
+        </ion-select>
+      </ion-item>
+    </ion-list>
+    <br />
+    <br />
+  </ion-header>
+</div>

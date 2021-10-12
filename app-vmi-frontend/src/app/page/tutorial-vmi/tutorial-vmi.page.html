@@ -1,0 +1,87 @@
+<div class="ion-page" main>
+  <ion-header class="parallax-obj parallax-translate-obj mobile">
+    <br />
+    <ion-toolbar>
+      <ion-buttons slot="start">
+        <ion-menu-button color="primary"></ion-menu-button>
+      </ion-buttons>
+      <ion-title color="primary">{{ 'TUTORIAL' | translate }}</ion-title>
+      <ion-buttons *ngIf="role == 'admin'" slot="end">
+        <ion-button color="primary" (click)="openAddTutorial()">
+          <ion-icon slot="icon-only" name="ios-add"></ion-icon>
+        </ion-button>
+      </ion-buttons>
+    </ion-toolbar>
+  </ion-header>
+  <ion-content>
+    <ion-refresher slot="fixed" (ionRefresh)="doRefresh($event)" (ionRefresh)="getData('','',pageselected)">
+      <ion-refresher-content>
+      </ion-refresher-content>
+    </ion-refresher>
+
+    <ion-list>
+      <div class="wrap-interval pdl-30 pdr-30">
+        <div class="core-float">
+          <br />
+          <ion-label class="txt-dark fs-12 uppercase">{{ 'EQUIPMENT' | translate }}:</ion-label>
+          <ion-item lines="none" class="bg-white bdra-30 mgt-10 shadow-1 bg-light">
+            <ion-select interface="popover" class="selection" [(ngModel)]="device" name="device">
+              <ion-select-option value="{{equipment.id}}" *ngFor="let equipment of equipments">{{equipment.model}}
+              </ion-select-option>
+            </ion-select>
+          </ion-item>
+          <br />
+          <ion-label class="txt-dark fs-12 uppercase">{{ 'KEYWORDS' | translate }}:</ion-label>
+          <br />
+          <div class="bg-white mgt-10 shadow-1 bg-light">
+            <ion-chip class="tag" *ngFor="let word of keywords ; let i= index">
+              {{ word }}
+              <ion-icon name="close-circle" (click)="removeKey(i)"></ion-icon>
+            </ion-chip>
+            <ion-input type="text" [(ngModel)]="keyword" name="keyword" (ionChange)="addKeyword(keyword.trimStart())"
+              (ionBlur)="addKeywordOff(keyword.trimStart())"></ion-input>
+          </div>
+          <br />
+          <ion-button shape="round" expand="block" color="primary" fill="solid" class="uppercase spacing1 fw-600"
+            type="submit" (click)="getData(device,keywords,'1')">
+            {{ 'SEARCH' | translate }}
+          </ion-button>
+          <br />
+          <br />
+        </div>
+      </div>
+      <p style="text-align: center;" *ngIf="result == ''">{{ 'NOITEM' | translate }}</p>
+      <ion-item-sliding #sliding id="sliding"  *ngFor="let tutorial of result">
+        <ion-item>
+          <ion-label>
+            <h2>{{ tutorial.title }}</h2>
+            <p>{{ 'DESCRIPTION' | translate }} : {{ tutorial.description }}</p>
+            <ion-button *ngIf="tutorial.attachments[0]" (click)="showThumbs(tutorial.attachments,false,tutorial.id)">{{ 'ATTACHMENTS' | translate }}
+            </ion-button>
+            <div class="row">
+              <div class="column" *ngFor=" let attachment of tutorial.attachments ; let i = index">
+                <img *ngIf="tutorial.id == tutorialselect" src="{{thumb[i]}}" (click)="openFile(attachment.id,true)" />
+              </div>
+            </div>
+          </ion-label>
+          <ion-buttons slot="end">
+            <ion-button color="tertiary" (click)="openSlide(sliding)">
+              <ion-icon slot="icon-only" name="more"></ion-icon>
+            </ion-button>
+          </ion-buttons>
+        </ion-item>
+        <ion-item-options *ngIf="role == 'admin'">
+          <ion-item-option color="danger" (click)="presentAlertDelete(tutorial.id)">
+            {{ 'DELETE' | translate }}
+          </ion-item-option>
+        </ion-item-options>
+      </ion-item-sliding>
+    </ion-list>
+    <h6 *ngIf="result != ''" style="text-align: center;">{{ 'PAGE' | translate }}</h6>
+    <ion-segment class="pagination segment-wrap" [(ngModel)]="pageselected" name="pageselected" color="primary">
+      <ion-segment-button value="{{npage}}" *ngFor="let npage of page" (click)="getData(npage)">
+        <a>{{npage}}</a>
+      </ion-segment-button>
+    </ion-segment>
+  </ion-content>
+</div>

@@ -1,0 +1,99 @@
+<ion-header class="parallax-obj parallax-translate-obj">
+  <br />
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button text="" color="primary" icon="ios-arrow-round-back"></ion-back-button>
+    </ion-buttons>
+    <ion-title color="primary">{{ 'SERVICES' | translate }}</ion-title>
+  </ion-toolbar>
+</ion-header>
+<ion-content>
+  <div>
+    <ion-segment mode="md" class="segment-wrap" color="secondary" [(ngModel)]="segment" name="segment"
+      (click)="clear()">
+      <ion-segment-button mode="md" value="corrective">
+        <ion-label>{{ 'CORRECTIVE' | translate }}</ion-label>
+      </ion-segment-button>
+      <ion-segment-button mode="md" value="maintenance">
+        <ion-label>{{ 'MAINTENANCE' | translate }}</ion-label>
+      </ion-segment-button>
+      <ion-segment-button mode="md" value="installation">
+        <ion-label>{{ 'INSTALLATION' | translate }}</ion-label>
+      </ion-segment-button>
+    </ion-segment>
+    <br />
+    <div class="pdl-50 pdr-50">
+      <div>
+        <ion-list>
+          <div class="brand">
+            <p class="fs-12 txt-dark pdl-30 pdr-30">{{ 'ORDERSUB' | translate }}</p>
+          </div>
+          <br />
+          <div class="main-form">
+            <form novalidate>
+              <ion-label class="txt-dark fs-12 uppercase">{{ 'CLIENT' | translate }}:</ion-label>
+              <br />
+              <small>{{ 'REQUIREDFIELD' | translate }}</small>
+              <ion-item lines="none" class="bg-white bdra-30 mgt-10 shadow-1 bg-light">
+                <ion-select (click)="getUser('')" class="selection" interface="popover" [(ngModel)]="clientchoose"
+                  name="clientchoose" placeholder="Selecione um Cliente">
+                  <ion-select-option value="{{client.id}}" *ngFor="let client of choose">{{client.name}} -
+                    {{client.company.name}}</ion-select-option>
+                </ion-select>
+              </ion-item>
+              <br />
+              <ion-label class="txt-dark fs-12 uppercase">{{ 'TECHNICIAN' | translate }}:</ion-label>
+              <br />
+              <small>{{ 'REQUIREDFIELD' | translate }}</small>
+              <ion-item lines="none" class="bg-white bdra-30 mgt-10 shadow-1 bg-light">
+                <ion-select (click)="getTech('')" class="selection" interface="popover" [(ngModel)]="techchooser"
+                  name="techchooser" placeholder="Selecione um Técnico">
+                  <ion-select-option value="{{tech.id}}" *ngFor="let tech of techchoose">{{tech.name}} -
+                    {{tech.company.name}}</ion-select-option>
+                </ion-select>
+              </ion-item>
+              <br *ngIf=" clientchoose != null " />
+              <ion-label *ngIf=" clientchoose != null " class="txt-dark fs-12 uppercase">
+                {{ 'SERIALNUMBER' | translate }}:</ion-label>
+              <br *ngIf=" clientchoose != null " /><br />
+              <small *ngIf=" clientchoose != null ">{{ 'REQUIREDFIELD' | translate }}</small>
+              <ion-item *ngIf=" clientchoose != null " lines="none" class="bg-white bdra-30 mgt-10 shadow-1 bg-light">
+                <ion-select (click)="getEquip(clientchoose)" class="selection" interface="popover"
+                  [(ngModel)]="equipmentchooser" name="equipmentchooser" placeholder="Selecione um Equipmanto">
+                  <ion-select-option value="{{equipment.id}}" *ngFor="let equipment of equipmentchoose">
+                    {{equipment.serial_number}} -
+                    {{equipment.equipment_details.model}}</ion-select-option>
+                </ion-select>
+              </ion-item>
+              <br *ngIf="segment == 'corrective'" />
+              <ion-label *ngIf="segment == 'corrective'" class="txt-dark fs-12 uppercase">
+                {{ 'OCCURRENCE' | translate }}:</ion-label>
+              <br *ngIf="segment == 'corrective'" />
+              <small *ngIf="segment == 'corrective'">{{ 'REQUIREDFIELD' | translate }}</small>
+              <ion-item *ngIf="segment == 'corrective'" lines="none" class="bg-white bdra-30 mgt-10 shadow-1 bg-light">
+                <ion-input type="text" [(ngModel)]="occurrence" name="occurrence"></ion-input>
+              </ion-item>
+              <br />
+              <ion-label class="txt-dark fs-12 uppercase">{{ 'DESCRIPTION' | translate }}:</ion-label>
+              <br />
+              <small>{{ 'REQUIREDFIELD' | translate }}</small>
+              <ion-item lines="none" class="bg-white bdra-30 mgt-10 shadow-1 bg-light">
+                <ion-textarea [(ngModel)]="description" name="description" rows="5"></ion-textarea>
+              </ion-item>
+              <br />
+              <app-multi-file-upload></app-multi-file-upload>
+              <br />
+              <br />
+              <ion-button shape="round" expand="block" color="primary" fill="solid" class="uppercase spacing1 fw-600"
+                type="submit"
+                (click)="sendPostRequest(occurrence, description, segment, techchooser , clientchoose, equipmentchooser)">
+                {{ 'SAVE' | translate }}
+              </ion-button>
+            </form>
+            <br />
+          </div>
+        </ion-list>
+      </div>
+    </div>
+  </div>
+</ion-content>

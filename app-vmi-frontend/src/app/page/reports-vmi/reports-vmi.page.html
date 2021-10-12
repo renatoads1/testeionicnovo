@@ -1,0 +1,351 @@
+<div *ngIf="hideModal == false" class="ion-page" main>
+  <ion-header class="parallax-obj parallax-translate-obj mobile">
+    <br />
+    <ion-toolbar>
+      <ion-buttons slot="start">
+        <ion-menu-button color="primary"></ion-menu-button>
+      </ion-buttons>
+      <ion-title color="primary">{{ 'REPORTS' | translate }}</ion-title>
+    </ion-toolbar>
+  </ion-header>
+  <ion-content>
+    <br />
+    <div class="filter main-form wrap-interval pdl-50 pdr-50">
+      <form novalidate>
+        <ion-label class="txt-dark fs-12 uppercase">{{ 'REPORTSELECT' | translate }} :</ion-label>
+        <br/>
+        <small>{{ 'REQUIREDFIELD' | translate }}</small>
+        <ion-item lines="none" class="bg-white bdra-30 mgt-10 shadow-1 bg-light">
+          <ion-select (click)="clear()" interface="popover" [(ngModel)]="type" name="type">
+            <ion-select-option value="user">{{ 'USER' | translate }}</ion-select-option>
+            <ion-select-option value="equipment">{{ 'EQUIPMENT' | translate }}</ion-select-option>
+            <ion-select-option value="warranty">{{ 'WARRANTY' | translate }}</ion-select-option>
+            <ion-select-option value="index">{{ 'INDEX' | translate }}</ion-select-option>
+          </ion-select>
+        </ion-item>
+        <br *ngIf="type!='index' && type" />
+
+        <ion-label *ngIf="type!='index' && type" class="txt-dark fs-12 uppercase">{{ 'REPORTTYPE' | translate }} :
+        </ion-label>
+        <br/>
+        <small *ngIf="type!='index' && type">{{ 'REQUIREDFIELD' | translate }}</small>
+        <ion-item *ngIf="type!='index' && type" lines="none" class="bg-white bdra-30 mgt-10 shadow-1 bg-light">
+          <ion-select interface="popover" [(ngModel)]="report_type" name="report_type">
+            <ion-select-option value="pdf">PDF</ion-select-option>
+            <ion-select-option value="xlsx">XLS</ion-select-option>
+          </ion-select>
+        </ion-item>
+        <br *ngIf="type!='index' && type" />
+
+        <ion-label *ngIf="type=='user'" class="txt-dark fs-12 uppercase">{{ 'USERTYPE' | translate }} :</ion-label>
+        <ion-item *ngIf="type=='user'" lines="none" class="bg-white bdra-30 mgt-10 shadow-1 bg-light">
+          <ion-select interface="popover" [(ngModel)]="role" name="role">
+            <ion-select-option *ngIf="parent=='admin'" value="admin">{{ 'DISTRIBUTOR' | translate }}</ion-select-option>
+            <ion-select-option value="technician">{{ 'TECHNICIAN' | translate }}</ion-select-option>
+            <ion-select-option value="client">{{ 'CLIENT' | translate }}</ion-select-option>
+          </ion-select>
+        </ion-item>
+
+
+        <br *ngIf="type=='index'" />
+        <ion-label *ngIf="type=='index'" class="txt-dark fs-12 uppercase">{{ 'INDEX' | translate }} :</ion-label>
+        <br/>
+        <small *ngIf="type=='index'">{{ 'REQUIREDFIELD' | translate }}</small>
+        <ion-item *ngIf="type=='index'" lines="none" class="bg-white bdra-30 mgt-10 shadow-1 bg-light">
+          <ion-select interface="popover" [(ngModel)]="index_role" name="index_role">
+            <ion-select-option value="index1">{{ 'INDEX1' | translate }}</ion-select-option>
+            <ion-select-option value="index2">{{ 'INDEX2' | translate }}</ion-select-option>
+            <ion-select-option value="index3">{{ 'INDEX3' | translate }}</ion-select-option>
+            <ion-select-option value="index4">{{ 'INDEX4' | translate }}</ion-select-option>
+            <ion-select-option value="index5">{{ 'MTTR' | translate }}</ion-select-option>
+            <ion-select-option value="index6">{{ 'MTBF' | translate }}</ion-select-option>
+          </ion-select>
+        </ion-item>
+
+        <br *ngIf="index_role=='index5'" />
+        <ion-label *ngIf="index_role=='index5'" class="txt-dark fs-12 uppercase">{{ 'INDEXTYPE' | translate }} :
+        </ion-label>
+        <br/>
+        <small *ngIf="index_role=='index5'">{{ 'REQUIREDFIELD' | translate }}</small>
+        <ion-item *ngIf="index_role=='index5'" lines="none" class="bg-white bdra-30 mgt-10 shadow-1 bg-light">
+          <ion-select interface="popover" [(ngModel)]="index5_type" name="index5_type">
+            <ion-select-option value="ticket">{{ 'TICKET' | translate }}</ion-select-option>
+            <ion-select-option value="service_order">{{ 'SERVICES' | translate }}</ion-select-option>
+          </ion-select>
+        </ion-item>
+
+        <br *ngIf="type=='user'" />
+        <ion-label *ngIf="type=='user'" class="txt-dark fs-12 uppercase">{{ 'COUNTRY' | translate }} :</ion-label>
+
+        <ion-item *ngIf="language =='en' && type=='user'" lines="none" class="bdra-30 shadow-2 bg-light mgt-5">
+          <ionic-selectable [searchFailText]="noitem" [searchPlaceholder]="search" [closeButtonText]="cancel"
+            [(ngModel)]="country" name="country" (click)="getAllCountries()" [items]="resultCountry"
+            itemTextField="name" [canSearch]="true" (onChange)="selectCountry()">
+          </ionic-selectable>
+
+
+        </ion-item>
+        <ion-item *ngIf="language=='pt' && type=='user'" lines="none" class="bdra-30 shadow-2 bg-light mgt-5">
+
+          <ionic-selectable [searchFailText]="noitem" [searchPlaceholder]="search" [closeButtonText]="cancel"
+            [(ngModel)]="country" name="country" (click)="getAllCountries()" [items]="resultCountry"
+            itemTextField="name" [canSearch]="true" (onChange)="selectCountry()">
+          </ionic-selectable>
+
+        </ion-item>
+        <ion-item *ngIf="language=='es' && type=='user'" lines="none" class="bdra-30 shadow-2 bg-light mgt-5">
+
+          <ionic-selectable [searchFailText]="noitem" [searchPlaceholder]="search" [closeButtonText]="cancel"
+            [(ngModel)]="country" name="country" (click)="getAllCountries()" [items]="resultCountry"
+            itemTextField="name" [canSearch]="true" (onChange)="selectCountry()">
+          </ionic-selectable>
+
+        </ion-item>
+        <br *ngIf="type=='user'" />
+        <ion-label *ngIf="country && type=='user'" class="txt-dark fs-12 uppercase">{{ 'REGION' | translate }}:
+        </ion-label>
+        <ion-item *ngIf="country && type=='user'" lines="none" class="bdra-30 shadow-2 bg-light mgt-5">
+
+          <ionic-selectable [searchFailText]="noitem" [searchPlaceholder]="search" [closeButtonText]="cancel"
+            [(ngModel)]="region" name="region" (click)="getAllRegion()" [items]="resultRegion" itemTextField="region"
+            [canSearch]="true" (onChange)="selectRegion()">
+          </ionic-selectable>
+
+        </ion-item>
+        <br *ngIf="country  && type=='user'" />
+        <ion-label *ngIf="region && type=='user'" class="txt-dark fs-12 uppercase">{{ 'CITY' | translate }}:
+        </ion-label>
+        <ion-item *ngIf="region && type=='user'" lines="none" class="bdra-30 shadow-2 bg-light mgt-5">
+
+          <ionic-selectable [searchFailText]="noitem" [searchPlaceholder]="search" [closeButtonText]="cancel"
+            [(ngModel)]="city" name="city" (click)="getAllCity()" [items]="resultCity" itemTextField="city"
+            [canSearch]="true" (onChange)="selectCity()">
+          </ionic-selectable>
+
+        </ion-item>
+        <br *ngIf="type=='user'" />
+        <ion-button *ngIf="type=='user'" shape="round" expand="block" color="primary" fill="solid"
+          class="uppercase spacing1 fw-600 pdl-30 pdr-30" type="submit" (click)="searchUsers()">
+          {{ 'REPORT' | translate }}
+        </ion-button>
+
+        <!-- Equipm -->
+        <br *ngIf="index_role=='index4'|| index_role=='index2' || index_role=='index3'" />
+
+        <ion-label *ngIf="type=='warranty' || index_role=='index4' || index_role=='index2' || index_role=='index3'"
+          class="txt-dark fs-12 uppercase">{{ 'INITIALDATE' | translate }}:
+        </ion-label>
+        <ion-item *ngIf="type=='warranty' || index_role=='index4'|| index_role=='index2'|| index_role=='index3'"
+          lines="none" class="bdra-30 shadow-2 bg-light mgt-5">
+
+          <ion-input type="date" [(ngModel)]="datei" name="datei"></ion-input>
+
+        </ion-item>
+
+        <br *ngIf="type=='warranty' || index_role=='index4' || index_role=='index2' || index_role=='index3'" />
+        <ion-label *ngIf="type=='warranty' || index_role=='index4' || index_role=='index2' || index_role=='index3'"
+          class="txt-dark fs-12 uppercase">{{ 'FINALDATE' | translate }}:
+        </ion-label>
+        <ion-item *ngIf="type=='warranty' || index_role=='index4' || index_role=='index2' || index_role=='index3'"
+          lines="none" class="bdra-30 shadow-2 bg-light mgt-5">
+
+          <ion-input type="date" [(ngModel)]="datef" name="datef"></ion-input>
+
+        </ion-item>
+
+        <br *ngIf="type=='warranty' || index_role=='index2' || index_role=='index5' || index_role=='index6'" />
+
+        <ion-label
+          *ngIf="type=='equipment' || type=='warranty' || index_role=='index2' || index_role=='index5' || index_role=='index6'"
+          class="txt-dark fs-12 uppercase">{{ 'MODEL' | translate }}:
+        </ion-label>
+        <ion-item
+          *ngIf="type=='equipment' || type=='warranty' || index_role=='index2' || index_role=='index5' || index_role=='index6'"
+          lines="none" class="bdra-30 shadow-2 bg-light mgt-5">
+
+          <ionic-selectable [searchFailText]="noitem" [searchPlaceholder]="search" [closeButtonText]="cancel"
+            [(ngModel)]="equipment_model" name="equipment_model" (click)="getAllModel()" [items]="resultModel"
+            itemTextField="model" [canSearch]="true" (onChange)="selectModel()">
+          </ionic-selectable>
+
+        </ion-item>
+
+
+        <br *ngIf="type=='equipment' || type=='warranty'" />
+        <ion-label *ngIf="type=='equipment' || type=='warranty'" class="txt-dark fs-12 uppercase">
+          {{ 'DISTRIBUTOR' | translate }}:
+        </ion-label>
+        <ion-item *ngIf="type=='equipment' || type=='warranty'" lines="none" class="bdra-30 shadow-2 bg-light mgt-5">
+
+          <ionic-selectable [searchFailText]="noitem" [searchPlaceholder]="search" [closeButtonText]="cancel"
+            [(ngModel)]="equipment_distributor" name="equipment_distributor" (click)="getAllDistributor()"
+            [items]="resultDistributor" itemTextField="name" [canSearch]="true" (onChange)="selectDistributor()">
+          </ionic-selectable>
+
+        </ion-item>
+
+        <br *ngIf="index_role=='index3' || index_role=='index4'" />
+        <ion-label *ngIf="index_role=='index3' || index_role=='index4'" class="txt-dark fs-12 uppercase">
+          {{ 'TECHNICIAN' | translate }}:
+        </ion-label>
+        <ion-item *ngIf="index_role=='index3' || index_role=='index4'" lines="none"
+          class="bdra-30 shadow-2 bg-light mgt-5">
+
+          <ionic-selectable [searchFailText]="noitem" [searchPlaceholder]="search" [closeButtonText]="cancel"
+            [(ngModel)]="equipment_technician" name="equipment_technician" (click)="getAllTechnician()"
+            [items]="resultTechnician" itemTextField="name" [canSearch]="true" (onChange)="selectTechnician()">
+          </ionic-selectable>
+
+        </ion-item>
+
+
+        <br *ngIf="type=='equipment' || type=='warranty'" />
+        <ion-label *ngIf="type=='equipment' || type=='warranty'" class="txt-dark fs-12 uppercase">
+          {{ 'COUNTRY' | translate }} :</ion-label>
+
+        <ion-item *ngIf="language =='en' && (type=='equipment' || type=='warranty')" lines="none"
+          class="bdra-30 shadow-2 bg-light mgt-5">
+          <ionic-selectable [searchFailText]="noitem" [searchPlaceholder]="search" [closeButtonText]="cancel"
+            [(ngModel)]="country" name="country" (click)="getAllCountries()" [items]="resultCountry"
+            itemTextField="name" [canSearch]="true" (onChange)="selectCountry()">
+          </ionic-selectable>
+
+        </ion-item>
+        <ion-item *ngIf="language=='pt'  && (type=='equipment' || type=='warranty')" lines="none"
+          class="bdra-30 shadow-2 bg-light mgt-5">
+
+          <ionic-selectable [searchFailText]="noitem" [searchPlaceholder]="search" [closeButtonText]="cancel"
+            [(ngModel)]="country" name="country" (click)="getAllCountries()" [items]="resultCountry"
+            itemTextField="name" [canSearch]="true" (onChange)="selectCountry()">
+          </ionic-selectable>
+
+        </ion-item>
+        <ion-item *ngIf="language=='es'  && (type=='equipment' || type=='warranty')" lines="none"
+          class="bdra-30 shadow-2 bg-light mgt-5">
+
+          <ionic-selectable [searchFailText]="noitem" [searchPlaceholder]="search" [closeButtonText]="cancel"
+            [(ngModel)]="country" name="country" (click)="getAllCountries()" [items]="resultCountry"
+            itemTextField="name" [canSearch]="true" (onChange)="selectCountry()">
+          </ionic-selectable>
+
+
+        </ion-item>
+        <br *ngIf="type=='equipment' || type=='warranty'" />
+        <ion-label *ngIf="country && (type=='equipment' || type=='warranty')" class="txt-dark fs-12 uppercase">
+          {{ 'REGION' | translate }}:
+        </ion-label>
+        <ion-item *ngIf="country && (type=='equipment' || type=='warranty')" lines="none"
+          class="bdra-30 shadow-2 bg-light mgt-5">
+
+          <ionic-selectable [searchFailText]="noitem" [searchPlaceholder]="search" [closeButtonText]="cancel"
+            [(ngModel)]="region" name="region" (click)="getAllRegion()" [items]="resultRegion" itemTextField="region"
+            [canSearch]="true" (onChange)="selectRegion()">
+          </ionic-selectable>
+
+        </ion-item>
+        <br *ngIf="country && (type=='equipment' || type=='warranty')" />
+        <ion-label *ngIf="region && (type=='equipment' || type=='warranty')" class="txt-dark fs-12 uppercase">
+          {{ 'CITY' | translate }}:
+        </ion-label>
+        <ion-item *ngIf="region && (type=='equipment' || type=='warranty')" lines="none"
+          class="bdra-30 shadow-2 bg-light mgt-5">
+
+          <ionic-selectable [searchFailText]="noitem" [searchPlaceholder]="search" [closeButtonText]="cancel"
+            [(ngModel)]="city" name="city" (click)="getAllCity()" [items]="resultCity" itemTextField="city"
+            [canSearch]="true" (onChange)="selectCity()">
+          </ionic-selectable>
+        </ion-item>
+        <br *ngIf="type=='equipment'" />
+        <ion-button *ngIf="type=='equipment'" shape="round" expand="block" color="primary" fill="solid"
+          class="uppercase spacing1 fw-600 pdl-30 pdr-30" type="submit" (click)="searchEquips()">
+          {{ 'REPORT' | translate }}
+        </ion-button>
+
+        <br *ngIf="type=='warranty'" />
+        <ion-button *ngIf="type=='warranty'" shape="round" expand="block" color="primary" fill="solid"
+          class="uppercase spacing1 fw-600 pdl-30 pdr-30" type="submit" (click)="searchWarranty()">
+          {{ 'REPORT' | translate }}
+        </ion-button>
+
+        <br *ngIf="index_role == 'index1'" />
+        <ion-button *ngIf="index_role == 'index1'" shape="round" expand="block" color="primary" fill="solid"
+          class="uppercase spacing1 fw-600 pdl-30 pdr-30" type="submit" (click)="searchClientMaintenance()">
+          {{ 'REPORT' | translate }}
+        </ion-button>
+
+        <br *ngIf="index_role == 'index2'" />
+        <ion-button *ngIf="index_role == 'index2'" shape="round" expand="block" color="primary" fill="solid"
+          class="uppercase spacing1 fw-600 pdl-30 pdr-30" type="submit" (click)="searchPieces()">
+          {{ 'REPORT' | translate }}
+        </ion-button>
+
+        <br *ngIf="index_role == 'index3'" />
+        <ion-button *ngIf="index_role == 'index3'" shape="round" expand="block" color="primary" fill="solid"
+          class="uppercase spacing1 fw-600 pdl-30 pdr-30" type="submit" (click)="searchTasks()">
+          {{ 'REPORT' | translate }}
+        </ion-button>
+
+        <br *ngIf="index_role == 'index4'" />
+        <ion-button *ngIf="index_role == 'index4'" shape="round" expand="block" color="primary" fill="solid"
+          class="uppercase spacing1 fw-600 pdl-30 pdr-30" type="submit" (click)="searchStatsOrder()">
+          {{ 'REPORT' | translate }}
+        </ion-button>
+
+        <br *ngIf="index_role == 'index5'" />
+        <ion-button *ngIf="index_role == 'index5'" shape="round" expand="block" color="primary" fill="solid"
+          class="uppercase spacing1 fw-600 pdl-30 pdr-30" type="submit" (click)="searchMTTR()">
+          {{ 'REPORT' | translate }}
+        </ion-button>
+
+        <br *ngIf="index_role == 'index6'" />
+        <ion-button *ngIf="index_role == 'index6'" shape="round" expand="block" color="primary" fill="solid"
+          class="uppercase spacing1 fw-600 pdl-30 pdr-30" type="submit" (click)="searchMTBF()">
+          {{ 'REPORT' | translate }}
+        </ion-button>
+
+        <br />
+        <ion-button shape="round" expand="block" color="primary" fill="solid"
+          class="uppercase spacing1 fw-600 pdl-30 pdr-30" type="submit" (click)="clear()">
+          {{ 'CLEAR' | translate }}
+        </ion-button>
+
+      </form>
+      <br />
+    </div>
+  </ion-content>
+</div>
+
+<div class="filter content" *ngIf="hideModal">
+  <ion-header class="parallax-obj parallax-translate-obj header-transparent modal">
+    <br />
+    <ion-toolbar>
+      <ion-title color="primary">{{ 'REPORTS' | translate }} :</ion-title>
+      <ion-buttons slot="end">
+        <ion-button color="primary" (click)="closeModal()">
+          <ion-icon slot="icon-only" name="close"></ion-icon>
+        </ion-button>
+      </ion-buttons>
+    </ion-toolbar>
+  </ion-header>
+
+  <ion-content class="modalfilter" *ngIf="hideModal">
+
+    <br />
+    <div *ngIf="pieceResult">
+      <ion-item  *ngFor="let piece of pieceResult">
+        <ion-label>
+          <h2>{{ piece.name }} - {{ 'AMOUNT' | translate }} : {{ piece.count }}</h2>
+        </ion-label>
+      </ion-item>
+    </div>
+    <div *ngIf="taskResult">
+      <ion-item *ngFor="let task of taskResult">
+        <ion-label>
+          <h2>{{ task.title }} - {{ 'AMOUNT' | translate }} : {{ task.count }}</h2>
+        </ion-label>
+      </ion-item>
+    </div>
+
+
+  </ion-content>
+</div>

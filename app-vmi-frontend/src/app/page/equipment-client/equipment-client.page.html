@@ -1,0 +1,76 @@
+<div class="ion-page" main>
+  <ion-header class="parallax-obj parallax-translate-obj mobile">
+    <br />
+
+    <ion-toolbar>
+      <ion-buttons slot="start">
+        <ion-menu-button color="primary"></ion-menu-button>
+      </ion-buttons>
+      <ion-title color="primary">{{ 'EQUIPMENTS' | translate }}</ion-title>
+      <ion-buttons slot="end">
+        <ion-button color="primary" (click)="openAdd()">
+          <ion-icon slot="icon-only" name="ios-add"></ion-icon>
+        </ion-button>
+      </ion-buttons>
+    </ion-toolbar>
+  </ion-header>
+  <ion-content>
+    <ion-refresher (ionRefresh)="doRefresh($event)" (ionRefresh)="getData(pageselected)">
+      <ion-refresher-content>
+      </ion-refresher-content>
+    </ion-refresher>
+
+    <ion-list>
+      <p style="text-align: center;" *ngIf="result == ''">{{ 'NOITEM' | translate }}</p>
+      <ion-item #sliding id="sliding" *ngFor="let equipment of result">
+        <ion-label>
+          <h2>{{ equipment.equipment_details.model }}</h2>
+          <p>{{ 'SERIALNUMBER' | translate }} : {{ equipment.serial_number }}</p>
+          <p *ngIf="equipment.justification != null">{{ 'JUSTIFY' | translate }} :
+            {{ equipment.justification.message }}</p>
+          <p *ngIf="equipment.equipment_qrcode_info">{{ 'AUTH' | translate }} : {{ 'FINISHED' | translate }}</p>
+          <p *ngIf="equipment.equipment_qrcode_info && equipment.equipment_qrcode_info.warranty_type == 'year'">
+            {{ 'WARRANTYTYPE' | translate }} : {{ 'YEAR' | translate }}</p>
+          <p *ngIf="equipment.equipment_qrcode_info && equipment.equipment_qrcode_info.warranty_type == 'month'">
+            {{ 'WARRANTYTYPE' | translate }} : {{ 'MONTH' | translate }}</p>
+          <p *ngIf="equipment.equipment_qrcode_info && equipment.equipment_qrcode_info.warranty_type == 'day'">
+            {{ 'WARRANTYTYPE' | translate }} : {{ 'DAY' | translate }}</p>
+          <p *ngIf="equipment.equipment_qrcode_info && equipment.equipment_qrcode_info.warranty_time">
+            {{ 'WARRANTYTIME' | translate }} : {{equipment.equipment_qrcode_info.warranty_time}}</p>
+          <p *ngIf="equipment.equipment_qrcode_info && equipment.equipment_qrcode_info.maintenance_type == 'year'">
+            {{ 'MAINTENANCETYPE' | translate }} : {{ 'YEAR' | translate }}</p>
+          <p *ngIf="equipment.equipment_qrcode_info && equipment.equipment_qrcode_info.maintenance_type == 'month'">
+            {{ 'MAINTENANCETYPE' | translate }} : {{ 'MONTH' | translate }}</p>
+          <p *ngIf="equipment.equipment_qrcode_info && equipment.equipment_qrcode_info.maintenance_type == 'day'">
+            {{ 'MAINTENANCETYPE' | translate }} : {{ 'DAY' | translate }}</p>
+          <p *ngIf="equipment.equipment_qrcode_info && equipment.equipment_qrcode_info.maintenance_time">
+            {{ 'MAINTENANCETIME' | translate }} : {{equipment.equipment_qrcode_info.maintenance_time}}</p>
+
+          <h3 *ngIf="equipment.singular_pieces">{{ 'PIECES' | translate }} :</h3>
+          <div *ngIf="equipment.singular_pieces">
+            <ion-label *ngFor="let piece of equipment.singular_pieces">
+              <p>{{ piece.vmi_code }} : {{ piece.description }} : {{ piece.optional_id }}</p>
+            </ion-label>
+          </div>
+
+        </ion-label>
+
+        <ion-note *ngIf="equipment.status == 'open'" slot="end">
+          {{ 'OPENED' | translate }}
+        </ion-note>
+        <ion-note *ngIf="equipment.status == 'accepted'" slot="end">
+          {{ 'ACCEPTED' | translate }}
+        </ion-note>
+        <ion-note *ngIf="equipment.status == 'rejected'" slot="end">
+          {{ 'REJECTED' | translate }}
+        </ion-note>
+      </ion-item>
+      <h6 *ngIf="result != ''" style="text-align: center;">{{ 'PAGE' | translate }}</h6>
+      <ion-segment class="pagination segment-wrap" [(ngModel)]="pageselected" name="pageselected" color="primary">
+        <ion-segment-button value="{{npage}}" *ngFor="let npage of page" (click)="getData(npage)">
+          <a>{{npage}}</a>
+        </ion-segment-button>
+      </ion-segment>
+    </ion-list>
+  </ion-content>
+</div>

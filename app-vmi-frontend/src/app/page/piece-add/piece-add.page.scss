@@ -1,0 +1,32 @@
+ion-header{
+	background-color: #373737 !important;
+	--background: #373737 !important;
+}
+
+ion-toolbar{
+	background-color: #373737 !important;
+	--background: #373737 !important;
+}
+
+ion-select{
+  position: absolute;
+  margin-left: -6%;
+  max-width: 100% !important;
+  width: 100% !important;
+}
+
+ion-select-option{
+	text-overflow: clip;
+	overflow: auto;
+	white-space: normal;
+}
+
+.alert-tappable.alert-radio {
+    height: auto;
+    contain: content;
+}
+
+.alert-radio-label.sc-ion-alert-md,
+.alert-radio-label.sc-ion-alert-ios {
+    white-space: normal;
+}

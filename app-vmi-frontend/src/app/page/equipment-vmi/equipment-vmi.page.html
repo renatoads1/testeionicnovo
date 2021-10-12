@@ -1,0 +1,327 @@
+<div class="ion-page" main>
+  <ion-header *ngIf="main" class="parallax-obj parallax-translate-obj mobile">
+    <br />
+    <ion-toolbar>
+      <ion-buttons slot="start">
+        <ion-menu-button color="primary"></ion-menu-button>
+      </ion-buttons>
+      <ion-title color="primary">{{ 'EQUIPMENTS' | translate }}</ion-title>
+      <ion-buttons slot="end">
+        <ion-button *ngIf="segment == 'model' && parent == 'admin'" color="primary" (click)="openAdd()">
+          <ion-icon slot="icon-only" name="ios-add"></ion-icon>
+        </ion-button>
+        <ion-button *ngIf="segment == 'reason'" color="primary" (click)="addReason()">
+          <ion-icon slot="icon-only" name="ios-add"></ion-icon>
+        </ion-button>
+      </ion-buttons>
+    </ion-toolbar>
+  </ion-header>
+  <ion-content *ngIf="main">
+    <ion-segment *ngIf="role == 'admin' || role == 'tech'" mode="md" class="segment-wrap" color="secondary" [(ngModel)]="segment"
+      name="segment">
+      <ion-segment-button *ngIf="role == 'admin'" mode="md" value="model" (click)="getData(1)">
+        <ion-label>{{ 'MODEL' | translate }}</ion-label>
+      </ion-segment-button>
+      <ion-segment-button *ngIf="role == 'admin'" mode="md" value="equipment" (click)="resetBadge()" (click)="getEquip(1)">
+        <ion-label>{{ 'EQUIPMENTS' | translate }} <ion-badge color="danger">{{equipment}}</ion-badge>
+        </ion-label>
+      </ion-segment-button>
+      <ion-segment-button *ngIf="role == 'admin'" mode="md" value="reason" (click)="getReasons(1)">
+        <ion-label>{{ 'JUSTIFY' | translate }}</ion-label>
+      </ion-segment-button>
+      <ion-segment-button *ngIf="role == 'admin' || role == 'tech'" mode="md" value="solicitations" (click)="getOrders(1)">
+        <ion-label>{{ 'SOLICITATIONS' | translate }}</ion-label>
+      </ion-segment-button>
+    </ion-segment>
+    <br />
+
+    <div [ngSwitch]="segment">
+      <ion-list *ngSwitchCase="'model'">
+        <ion-refresher slot="fixed" (ionRefresh)="doRefresh($event)" (ionRefresh)="getData(pageselected)">
+          <ion-refresher-content>
+          </ion-refresher-content>
+        </ion-refresher>
+        <p style="text-align: center;" *ngIf="result == ''">{{ 'NOITEM' | translate }}</p>
+        <ion-item-sliding #sliding id="sliding" *ngFor="let equipment of result">
+          <ion-item>
+            <ion-label>
+              <h2>{{ 'MODEL' | translate }} : {{ equipment.model }}</h2>
+            </ion-label>
+            <ion-buttons slot="end">
+              <ion-button color="tertiary" (click)="openSlide(sliding)">
+                <ion-icon slot="icon-only" name="more"></ion-icon>
+              </ion-button>
+            </ion-buttons>
+          </ion-item>
+          <ion-item-options>
+            <ion-item-option *ngIf="parent == 'admin'" color="danger" (click)="presentAlertDelete(equipment.id)">
+              {{ 'DELETE' | translate }}
+            </ion-item-option>
+          </ion-item-options>
+        </ion-item-sliding>
+        <h6 *ngIf="result != ''" style="text-align: center;">{{ 'PAGE' | translate }}</h6>
+        <ion-segment class="pagination segment-wrap" [(ngModel)]="pageselected" name="pageselected" color="primary">
+          <ion-segment-button value="{{npage}}" *ngFor="let npage of page" (click)="getData(npage)">
+            <a>{{npage}}</a>
+          </ion-segment-button>
+        </ion-segment>
+      </ion-list>
+
+
+      <ion-list *ngSwitchCase="'equipment'">
+        <ion-refresher slot="fixed" (ionRefresh)="doRefresh($event)" (ionRefresh)="getEquip(pageselected)">
+          <ion-refresher-content>
+          </ion-refresher-content>
+        </ion-refresher>
+        <div lines="none" class="pdl-30 pdr-30">
+          <ion-item lines="none" class="bg-white bdra-30 mgt-10 shadow-1 bg-light">
+            <ion-select (click)="getClients()" interface="popover" class="select" [(ngModel)]="user" name="user">
+              <ion-select-option value="{{user.id}}" *ngFor="let user of users">{{user.name}} - {{user.company.name}}
+              </ion-select-option>
+            </ion-select>
+          </ion-item>
+          <br />
+          <ion-button shape="round" expand="block" color="primary" fill="solid" class="uppercase spacing1 fw-600"
+            type="submit" (click)="getEquip('1')">
+            {{ 'SEARCH' | translate }}
+          </ion-button>
+        </div>
+        <br />
+        <p style="text-align: center;" *ngIf="resultEquip == ''">{{ 'NOITEM' | translate }}</p>
+        <ion-item-sliding #sliding id="sliding" *ngFor="let equipment of resultEquip; let i = index">
+          <ion-item>
+            <ion-label>
+              <h2>{{ equipment.name }}</h2>
+              <p>{{ 'COMPANY' | translate }} : {{ equipment.user.company.name }}</p>
+              <p>{{ 'USER' | translate }} : {{ equipment.user.name }}</p>
+              <p>{{ 'SERIALNUMBER' | translate }} : {{ equipment.serial_number }}</p>
+              <p *ngIf="parent == 'admin' && equipment.equipment_qrcode_info">{{ 'AUTH' | translate }} :
+                {{ 'FINISHED' | translate }}</p>
+              <p
+                *ngIf="parent == 'admin' && equipment.equipment_qrcode_info && equipment.equipment_qrcode_info.warranty_type == 'year'">
+                {{ 'WARRANTYTYPE' | translate }} : {{ 'YEAR' | translate }}</p>
+              <p
+                *ngIf="parent == 'admin' && equipment.equipment_qrcode_info && equipment.equipment_qrcode_info.warranty_type == 'month'">
+                {{ 'WARRANTYTYPE' | translate }} : {{ 'MONTH' | translate }}</p>
+              <p
+                *ngIf="parent == 'admin' && equipment.equipment_qrcode_info && equipment.equipment_qrcode_info.warranty_type == 'day'">
+                {{ 'WARRANTYTYPE' | translate }} : {{ 'DAY' | translate }}</p>
+              <p
+                *ngIf="parent == 'admin' && equipment.equipment_qrcode_info && equipment.equipment_qrcode_info.warranty_time">
+                {{ 'WARRANTYTIME' | translate }} : {{equipment.equipment_qrcode_info.warranty_time}}</p>
+              <p
+                *ngIf="parent == 'admin' && equipment.equipment_qrcode_info && equipment.equipment_qrcode_info.maintenance_type == 'year'">
+                {{ 'MAINTENANCETYPE' | translate }} : {{ 'YEAR' | translate }}</p>
+              <p
+                *ngIf="parent == 'admin' && equipment.equipment_qrcode_info && equipment.equipment_qrcode_info.maintenance_type == 'month'">
+                {{ 'MAINTENANCETYPE' | translate }} : {{ 'MONTH' | translate }}</p>
+              <p
+                *ngIf="parent == 'admin' && equipment.equipment_qrcode_info && equipment.equipment_qrcode_info.maintenance_type == 'day'">
+                {{ 'MAINTENANCETYPE' | translate }} : {{ 'DAY' | translate }}</p>
+              <p
+                *ngIf="parent == 'admin' && equipment.equipment_qrcode_info && equipment.equipment_qrcode_info.maintenance_time">
+                {{ 'MAINTENANCETIME' | translate }} : {{equipment.equipment_qrcode_info.maintenance_time}}</p>
+            </ion-label>
+            <ion-note *ngIf="equipment.status == 'open'" slot="end">
+              {{ 'OPENED' | translate }}
+            </ion-note>
+            <ion-note *ngIf="equipment.status == 'accepted'" slot="end">
+              {{ 'ACCEPTED' | translate }}
+            </ion-note>
+            <ion-note *ngIf="equipment.status == 'rejected'" slot="end">
+              {{ 'REJECTED' | translate }}
+            </ion-note>
+            <ion-buttons slot="end">
+              <ion-button color="tertiary" (click)="openSlide(sliding)">
+                <ion-icon slot="icon-only" name="more"></ion-icon>
+              </ion-button>
+            </ion-buttons>
+          </ion-item>
+          <ion-item-options>
+            <ion-item-option *ngIf="parent == 'admin' && equipment.equipment_qrcode_info" color="primary"
+              (click)="accessCodeOpen(equipment.serial_number)">
+              {{ 'ACCESSCODE' | translate }}
+            </ion-item-option>
+            <ion-item-option color="success" (click)="acceptEquipment(equipment.serial_number,pageselected)">
+              {{ 'ACCEPT' | translate }}
+            </ion-item-option>
+            <ion-item-option color="danger" (click)="getReasons('1')">
+              {{ 'REJECT' | translate }}
+              <ion-select interface="popover"
+                (ionChange)="rejectEquipment(equipment.serial_number,equipment.justification,pageselected)"
+                [(ngModel)]="equipment.justification" name="equipment.justification">
+                <ion-select-option value="{{reason.id}}" *ngFor="let reason of resultReason">{{reason.message}}
+                </ion-select-option>
+              </ion-select>
+            </ion-item-option>
+          </ion-item-options>
+        </ion-item-sliding>
+        <h6 *ngIf="resultEquip != ''" style="text-align: center;">{{ 'PAGE' | translate }}</h6>
+        <ion-segment class="pagination segment-wrap" [(ngModel)]="pageselected" name="pageselected" color="primary">
+          <ion-segment-button value="{{npage}}" *ngFor="let npage of page" (click)="getEquip(npage)">
+            <a>{{npage}}</a>
+          </ion-segment-button>
+        </ion-segment>
+      </ion-list>
+
+      <ion-list *ngSwitchCase="'reason'">
+        <ion-refresher slot="fixed" (ionRefresh)="doRefresh($event)" (ionRefresh)="getReasons(pageselected)">
+          <ion-refresher-content>
+          </ion-refresher-content>
+        </ion-refresher>
+        <p style="text-align: center;" *ngIf="resultReason == ''">{{ 'NOITEM' | translate }}</p>
+        <ion-item-sliding #sliding id="sliding" *ngFor="let reason of resultReason">
+          <ion-item>
+            <ion-label>
+              <h2>{{ 'JUSTIFY' | translate }} : </h2>
+              <p>{{ reason.message }}</p>
+            </ion-label>
+            <ion-buttons slot="end">
+              <ion-button color="tertiary" (click)="openSlide(sliding)">
+                <ion-icon slot="icon-only" name="more"></ion-icon>
+              </ion-button>
+            </ion-buttons>
+          </ion-item>
+          <ion-item-options>
+            <ion-item-option color="danger" (click)="presentReasonDelete(reason.id)">
+              {{ 'DELETE' | translate }}
+            </ion-item-option>
+          </ion-item-options>
+        </ion-item-sliding>
+        <h6 *ngIf="resultReason != ''" style="text-align: center;">{{ 'PAGE' | translate }}</h6>
+        <ion-segment class="pagination segment-wrap" [(ngModel)]="pageselected" name="pageselected" color="primary">
+          <ion-segment-button value="{{npage}}" *ngFor="let npage of page" (click)="getReasons(npage)">
+            <a>{{npage}}</a>
+          </ion-segment-button>
+        </ion-segment>
+      </ion-list>
+
+
+      <ion-list *ngSwitchCase="'solicitations'">
+        <ion-refresher slot="fixed" (ionRefresh)="doRefresh($event)" (ionRefresh)="getOrders(pageselected)">
+          <ion-refresher-content>
+          </ion-refresher-content>
+        </ion-refresher>
+        <p style="text-align: center;" *ngIf="resultOrders == ''">{{ 'NOITEM' | translate }}</p>
+        <ion-item-sliding #sliding id="sliding" *ngFor="let order of resultOrders">
+          <ion-item *ngIf="order.equipment_request">
+            <ion-label>
+              <h2>{{ 'SOLICITATIONS' | translate }} : </h2>
+              <h2>{{ 'NUMBER' | translate }} : {{ order.id }}</h2>
+              <h3>{{ order.description }}</h3>
+              <p>{{ 'CLIENT' | translate }} : {{ order.customer.name }} -
+                {{ order.customer.company.name }}</p>
+              <p>{{ 'TECHNICIAN' | translate }} :
+                {{ order.technician.name }}</p>
+              <p>{{ 'STATE' | translate }} : {{order.equipment_request.state}}</p>
+              <p>{{ 'ACCESSCODE' | translate }} : {{order.equipment_request.auth_code}}</p>    
+              <p>{{ 'EQUIPMENT' | translate }} : {{ order.equipment.serial_number }}</p>
+              <h2>{{ 'PIECES' | translate }} :</h2>
+              <ion-label *ngFor="let piece of order.equipment_request.singular_pieces">
+                <p>{{ piece.vmi_code }} : {{ piece.description }} : {{ piece.optional_id }}</p>
+              </ion-label>
+            </ion-label>
+            <ion-buttons slot="end">
+              <ion-button color="tertiary" (click)="openSlide()">
+                <ion-icon slot="icon-only" name="more"></ion-icon>
+              </ion-button>
+            </ion-buttons>
+          </ion-item>
+          <ion-item-options>
+            <ion-item-option *ngIf="role == 'admin' && !order.equipment.equipment_info" color="success" (click)="accessCodeOpen(order.equipment_request.id,order.equipment.serial_number,order.equipment_request.auth_code,'pre-approved','','','','')">
+              {{ 'ACCEPT' | translate }}
+            </ion-item-option>
+            <ion-item-option *ngIf="role == 'admin' && order.equipment.equipment_info" color="success" (click)="accessCodeOpen(order.equipment_request.id,order.equipment.serial_number,order.equipment_request.auth_code,'pre-approved',order.equipment.equipment_info.maintenance_time,order.equipment.equipment_info.maintenance_type,order.equipment.equipment_info.warranty_time,order.equipment.equipment_info.warranty_type)">
+              {{ 'ACCEPT' | translate }}
+            </ion-item-option>
+            <ion-item-option *ngIf="role == 'admin'" color="danger" (click)="approve(order.equipment_request.id,order.equipment.serial_number,'inactive')">
+              {{ 'REJECT' | translate }}
+            </ion-item-option>
+            <ion-item-option *ngIf="role == 'tech' && order.equipment_request.state == 'pre-approved'" color="success" (click)="approve(order.equipment_request.id,order.equipment.serial_number,'active')">
+              {{ 'ACCEPT' | translate }}
+            </ion-item-option>
+          </ion-item-options>
+        </ion-item-sliding>
+        <h6 *ngIf="resultOrders != ''" style="text-align: center;">{{ 'PAGE' | translate }}</h6>
+        <ion-segment class="pagination segment-wrap" [(ngModel)]="pageselected" name="pageselected" color="primary">
+          <ion-segment-button value="{{npage}}" *ngFor="let npage of page" (click)="getOrders(npage)">
+            <a>{{npage}}</a>
+          </ion-segment-button>
+        </ion-segment>
+      </ion-list>
+    </div>
+  </ion-content>
+
+  <ion-header *ngIf="accesscode" class="parallax-obj parallax-translate-obj mobile">
+    <br />
+    <ion-toolbar>
+      <ion-buttons slot="start">
+        <ion-menu-button color="primary"></ion-menu-button>
+      </ion-buttons>
+      <ion-title color="primary">{{ 'ACCESSCODE' | translate }}</ion-title>
+      <ion-buttons slot="end">
+        <ion-button color="primary" (click)="accessCodeOpen('')">
+          <ion-icon slot="icon-only" name="close"></ion-icon>
+        </ion-button>
+      </ion-buttons>
+    </ion-toolbar>
+  </ion-header>
+
+  <ion-content class="accesscode" *ngIf="accesscode">
+
+    <br />
+    <div class="main-form wrap-interval pdl-50 pdr-50">
+      <form novalidate>
+        <ion-label class="txt-dark fs-12 uppercase">{{ 'ACCESSCODE' | translate }} :</ion-label>
+        <ion-item lines="none" class="bg-white bdra-30 mgt-10 shadow-1 bg-light">
+          <ion-input [(ngModel)]="auth_code" name="auth_code"></ion-input>
+        </ion-item>
+        <br />
+        <ion-label class="txt-dark fs-12 uppercase">
+          {{ 'WARRANTYTYPE' | translate }} :</ion-label>
+        <ion-item lines="none" class="bdra-30 shadow-2 bg-light mgt-5">
+          <ion-select class="selection-2" interface="popover" [(ngModel)]="warrantytype"
+            name="warrantytype" placeholder="{{ 'WARRANTYTYPE' | translate }}">
+            <ion-select-option value="year">{{ 'YEAR' | translate }}</ion-select-option>
+            <ion-select-option value="month">{{ 'MONTH' | translate }}</ion-select-option>
+            <ion-select-option value="day">{{ 'DAY' | translate }}</ion-select-option>
+          </ion-select>
+        </ion-item>
+        <br />
+        <ion-label class="txt-dark fs-12 uppercase">{{ 'WARRANTYTIME' | translate }} :
+        </ion-label>
+        <ion-item lines="none" class="bg-white bdra-30 mgt-10 shadow-1 bg-light">
+          <ion-input type="number" [(ngModel)]="warrantytime" name="warrantytime"></ion-input>
+        </ion-item>
+        <br />
+        <ion-label class="txt-dark fs-12 uppercase">
+          {{ 'MAINTENANCETYPE' | translate }} :</ion-label>
+        <ion-item lines="none" class="bdra-30 shadow-2 bg-light mgt-5">
+          <ion-select class="selection-2" interface="popover" [(ngModel)]="maintenancetype"
+            name="maintenancetype" placeholder="{{ 'MAINTENANCETYPE' | translate }}">
+            <ion-select-option value="year">{{ 'YEAR' | translate }}</ion-select-option>
+            <ion-select-option value="month">{{ 'MONTH' | translate }}</ion-select-option>
+            <ion-select-option value="day">{{ 'DAY' | translate }}</ion-select-option>
+          </ion-select>
+        </ion-item>
+        <br />
+        <ion-label class="txt-dark fs-12 uppercase">{{ 'MAINTENANCETIME' | translate }} :
+        </ion-label>
+        <ion-item lines="none" class="bg-white bdra-30 mgt-10 shadow-1 bg-light">
+          <ion-input type="number" [(ngModel)]="maintenancetime" name="maintenancetime"></ion-input>
+        </ion-item>
+        <br />
+        <ion-button shape="round" expand="block" color="primary" fill="solid"
+          class="uppercase spacing1 fw-600 pdl-30 pdr-30" type="submit" (click)="warranty()">
+          {{ 'SAVE' | translate }}
+        </ion-button>
+      </form>
+      <br />
+      <br />
+      <br />
+      <br />
+      <br />
+    </div>
+
+  </ion-content>
+</div>

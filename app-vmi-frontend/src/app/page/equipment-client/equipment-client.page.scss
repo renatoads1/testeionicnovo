@@ -1,0 +1,38 @@
+ion-header{
+	background-color: #373737 !important;
+	--background: #373737 !important;
+}
+
+ion-toolbar{
+	background-color: #373737 !important;
+	--background: #373737 !important;
+}
+
+@media (max-width: 600px) {
+  .segment-wrap {
+    flex-wrap: wrap;
+
+    .segment-button {
+      flex: 1 0 25%;
+    }
+
+    .segment-button:nth-child(-n+4) {
+      border-bottom: none;
+    }
+
+    .segment-button:first-of-type,
+    .segment-button:last-of-type {
+      border-bottom-left-radius: 0;
+      border-top-right-radius: 0;
+    }
+
+    .segment-button:nth-child(4) {
+      border-top-right-radius: 4px;
+    }
+
+    .segment-button:nth-child(5) {
+      border-left-width: 1px;
+      border-bottom-left-radius: 4px;
+    }
+  }
+}

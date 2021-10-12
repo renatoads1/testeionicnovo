@@ -1,0 +1,223 @@
+<ion-app>
+  <ion-menu (ionWillOpen)="loadBadge()" side="start" menuId="admin">
+    <ion-header class="menu">
+      <br />
+      <ion-toolbar translucent class="menu-toolbar">
+        <ion-title color="primary">{{ 'MENU' | translate }}</ion-title>
+      </ion-toolbar>
+    </ion-header>
+    <ion-content>
+      <ion-list>
+        <ion-item (click)="openHomeVMI()">
+          <ion-icon name="ios-home" slot="start"></ion-icon>
+          <ion-label>{{ 'HOME' | translate }}</ion-label>
+        </ion-item>
+        <ion-item (click)="openFeed()">
+          <ion-icon name="ios-contacts" slot="start"></ion-icon>
+          <ion-label>Feed</ion-label>
+        </ion-item>
+        <ion-item (click)="openTicket()">
+          <ion-icon name="ios-share-alt" slot="start"></ion-icon>
+          <ion-label>{{ 'TICKET' | translate }}  <ion-badge color="danger">{{ticket}}</ion-badge></ion-label>
+        </ion-item>
+        <ion-item (click)="openService()">
+          <ion-icon name="ios-calendar" slot="start"></ion-icon>
+          <ion-label>{{ 'SERVICES' | translate }}  <ion-badge color="danger">{{services}}</ion-badge></ion-label>
+        </ion-item>
+        <ion-item (click)="openPieceVMI()">
+          <ion-icon name="ios-cog" slot="start"></ion-icon>
+          <ion-label>{{ 'PIECES' | translate }}</ion-label>
+        </ion-item>
+        <ion-item (click)="openTaskVMI()">
+          <ion-icon name="ios-checkbox" slot="start"></ion-icon>
+          <ion-label>{{ 'TASKS' | translate }}</ion-label>
+        </ion-item>
+        <ion-item (click)="openEquipmentVMI()">
+          <ion-icon name="ios-build" slot="start"></ion-icon>
+          <ion-label>{{ 'EQUIPMENTS' | translate }}  <ion-badge color="danger">{{equipment}}</ion-badge></ion-label>
+        </ion-item>
+        <ion-item (click)="openReportVMI()">
+          <ion-icon name="ios-copy" slot="start"></ion-icon>
+          <ion-label>{{ 'REPORTS' | translate }}</ion-label>
+        </ion-item>
+        <ion-item (click)="openTutorialVMI()">
+          <ion-icon name="ios-school" slot="start"></ion-icon>
+          <ion-label>{{ 'TUTORIAL' | translate }}</ion-label>
+        </ion-item>
+        <ion-item (click)="openSolicitationVMI()">
+          <ion-icon name="ios-tv" slot="start"></ion-icon>
+          <ion-label>{{ 'SOLICITATIONS' | translate }}  <ion-badge color="danger">{{solicitations}}</ion-badge></ion-label>
+        </ion-item>
+        <ion-item (click)="openHelp()">
+          <ion-icon name="help-circle-outline" slot="start"></ion-icon>
+          <ion-label>{{ 'HELP' | translate }}</ion-label>
+        </ion-item>
+        <ion-item (click)="openSettings()">
+          <ion-icon name="ios-more" slot="start"></ion-icon>
+          <ion-label>{{ 'SETTINGS' | translate }}</ion-label>
+        </ion-item>
+        <ion-item (click)="openLeave()">
+          <ion-icon name="ios-log-out" slot="start"></ion-icon>
+          <ion-label>{{ 'LEAVE' | translate }}</ion-label>
+        </ion-item>
+      </ion-list>
+    </ion-content>
+  </ion-menu>
+
+  <ion-menu side="start" menuId="distributor">
+    <ion-header class="menu">
+      <br />
+      <ion-toolbar translucent class="menu-toolbar">
+        <ion-title color="primary">{{ 'MENU' | translate }}</ion-title>
+      </ion-toolbar>
+    </ion-header>
+    <ion-content>
+      <ion-list>
+        <ion-item (click)="openHomeVMI()">
+          <ion-icon name="ios-home" slot="start"></ion-icon>
+          <ion-label>{{ 'HOME' | translate }}</ion-label>
+        </ion-item>
+        <ion-item (click)="openFeed()">
+          <ion-icon name="ios-contacts" slot="start"></ion-icon>
+          <ion-label>Feed</ion-label>
+        </ion-item>
+        <ion-item (click)="openTicket()">
+          <ion-icon name="ios-share-alt" slot="start"></ion-icon>
+          <ion-label>{{ 'TICKET' | translate }}</ion-label>
+        </ion-item>
+        <ion-item (click)="openService()">
+          <ion-icon name="ios-calendar" slot="start"></ion-icon>
+          <ion-label>{{ 'SERVICES' | translate }}</ion-label>
+        </ion-item>
+        <!-- <ion-item (click)="openPieceVMI()">
+          <ion-icon name="ios-cog" slot="start"></ion-icon>
+          <ion-label>{{ 'PIECES' | translate }}</ion-label>
+        </ion-item> -->
+        <ion-item (click)="openTaskVMI()">
+          <ion-icon name="ios-checkbox" slot="start"></ion-icon>
+          <ion-label>{{ 'TASKS' | translate }}</ion-label>
+        </ion-item>
+        <ion-item (click)="openEquipmentVMI()">
+          <ion-icon name="ios-build" slot="start"></ion-icon>
+          <ion-label>{{ 'EQUIPMENTS' | translate }}</ion-label>
+        </ion-item>
+        <!-- <ion-item (click)="openReportVMI()">
+          <ion-icon name="ios-copy" slot="start"></ion-icon>
+          <ion-label>{{ 'REPORTS' | translate }}</ion-label>
+        </ion-item> -->
+        <ion-item (click)="openTutorialVMI()">
+          <ion-icon name="ios-school" slot="start"></ion-icon>
+          <ion-label>{{ 'TUTORIAL' | translate }}</ion-label>
+        </ion-item>
+        <ion-item (click)="openSolicitationVMI()">
+          <ion-icon name="ios-tv" slot="start"></ion-icon>
+          <ion-label>{{ 'SOLICITATIONS' | translate }}</ion-label>
+        </ion-item>
+        <ion-item (click)="openHelp()">
+          <ion-icon name="help-circle-outline" slot="start"></ion-icon>
+          <ion-label>{{ 'HELP' | translate }}</ion-label>
+        </ion-item>
+        <ion-item (click)="openSettings()">
+          <ion-icon name="ios-more" slot="start"></ion-icon>
+          <ion-label>{{ 'SETTINGS' | translate }}</ion-label>
+        </ion-item>
+        <ion-item (click)="openLeave()">
+          <ion-icon name="ios-log-out" slot="start"></ion-icon>
+          <ion-label>{{ 'LEAVE' | translate }}</ion-label>
+        </ion-item>
+      </ion-list>
+    </ion-content>
+  </ion-menu>
+
+  <ion-menu side="start" menuId="client">
+    <ion-header class="menu">
+      <br />
+      <ion-toolbar translucent class="menu-toolbar">
+        <ion-title color="primary">{{ 'MENU' | translate }}</ion-title>
+      </ion-toolbar>
+    </ion-header>
+    <ion-content>
+      <ion-list>
+        <ion-item (click)="openFeed()">
+          <ion-icon name="ios-contacts" slot="start"></ion-icon>
+          <ion-label>Feed</ion-label>
+        </ion-item>
+        <ion-item (click)="openEquipmentClient()">
+          <ion-icon name="ios-build" slot="start"></ion-icon>
+          <ion-label>{{ 'EQUIPMENTS' | translate }}  <ion-badge color="danger">{{equipment}}</ion-badge></ion-label>
+        </ion-item>
+        <ion-item (click)="openTicket()">
+          <ion-icon name="ios-share-alt" slot="start"></ion-icon>
+          <ion-label>{{ 'TICKET' | translate }}  <ion-badge color="danger">{{ticket}}</ion-badge></ion-label>
+        </ion-item>
+        <ion-item (click)="openService()">
+          <ion-icon name="ios-calendar" slot="start"></ion-icon>
+          <ion-label>{{ 'SERVICES' | translate }}  <ion-badge color="danger">{{services}}</ion-badge></ion-label>
+        </ion-item>
+        <ion-item (click)="openTutorialVMI()">
+          <ion-icon name="ios-school" slot="start"></ion-icon>
+          <ion-label>{{ 'TUTORIAL' | translate }}</ion-label>
+        </ion-item>
+        <ion-item (click)="openHelp()">
+          <ion-icon name="help-circle-outline" slot="start"></ion-icon>
+          <ion-label>{{ 'HELP' | translate }}</ion-label>
+        </ion-item>
+        <ion-item (click)="openSettings()">
+          <ion-icon name="ios-more" slot="start"></ion-icon>
+          <ion-label>{{ 'SETTINGS' | translate }}</ion-label>
+        </ion-item>
+        <ion-item (click)="openLeave()">
+          <ion-icon name="ios-log-out" slot="start"></ion-icon>
+          <ion-label>{{ 'LEAVE' | translate }}</ion-label>
+        </ion-item>
+      </ion-list>
+    </ion-content>
+  </ion-menu>
+
+  <ion-menu side="start" menuId="tech">
+    <ion-header class="menu">
+      <br />
+      <ion-toolbar translucent class="menu-toolbar">
+        <ion-title color="primary">{{ 'MENU' | translate }}</ion-title>
+      </ion-toolbar>
+    </ion-header>
+    <ion-content>
+      <ion-list>
+        <ion-item (click)="openFeed()">
+          <ion-icon name="ios-contacts" slot="start"></ion-icon>
+          <ion-label>Feed</ion-label>
+        </ion-item>
+        <ion-item (click)="openTicket()">
+          <ion-icon name="ios-share-alt" slot="start"></ion-icon>
+          <ion-label>{{ 'TICKET' | translate }}  <ion-badge color="danger">{{ticket}}</ion-badge></ion-label>
+        </ion-item>
+        <ion-item (click)="openService()">
+          <ion-icon name="ios-calendar" slot="start"></ion-icon>
+          <ion-label>{{ 'SERVICES' | translate }}  <ion-badge color="danger">{{services}}</ion-badge></ion-label>
+        </ion-item>
+        <ion-item (click)="openTutorialVMI()">
+          <ion-icon name="ios-school" slot="start"></ion-icon>
+          <ion-label>{{ 'TUTORIAL' | translate }}</ion-label>
+        </ion-item>
+        <!-- <ion-item (click)="openEquipmentVMI()">
+          <ion-icon name="ios-build" slot="start"></ion-icon>
+          <ion-label>{{ 'AUTH' | translate }}  <ion-badge color="danger">{{equipment}}</ion-badge></ion-label>
+        </ion-item> -->
+        <ion-item (click)="openHelp()">
+          <ion-icon name="help-circle-outline" slot="start"></ion-icon>
+          <ion-label>{{ 'HELP' | translate }}</ion-label>
+        </ion-item>
+        <ion-item (click)="openSettings()">
+          <ion-icon name="ios-more" slot="start"></ion-icon>
+          <ion-label>{{ 'SETTINGS' | translate }}</ion-label>
+        </ion-item>
+        <ion-item (click)="openLeave()">
+          <ion-icon name="ios-log-out" slot="start"></ion-icon>
+          <ion-label>{{ 'LEAVE' | translate }}</ion-label>
+        </ion-item>
+      </ion-list>
+    </ion-content>
+  </ion-menu>
+
+  <ion-router-outlet main></ion-router-outlet>
+</ion-app>

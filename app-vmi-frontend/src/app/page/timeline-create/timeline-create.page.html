@@ -1,0 +1,60 @@
+<ion-header class="parallax-obj parallax-translate-obj">
+  <br />
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button text="" color="primary" icon="ios-arrow-round-back"></ion-back-button>
+    </ion-buttons>
+    <ion-title color="primary">{{ 'ADD' | translate }} {{ 'TIMELINE' | translate }}</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <div>
+    <div class="bg-img bckg">
+    </div>
+    <div class="wrap-interval pdl-50 pdr-50">
+      <div class="core-float">
+        <br />
+        <div class="main-form">
+          <form novalidate>
+            <br />
+            <ion-label class="txt-dark fs-12 uppercase">{{ 'KEYWORDS' | translate }}:</ion-label>
+            <br />
+            <small>{{ 'REQUIREDFIELD' | translate }}</small>
+            <div class="bg-white bdra-30 mgt-10 shadow-1 bg-light">
+              <ion-chip class="tag" *ngFor="let word of keywords ; let i= index">
+                {{ word }}
+                <ion-icon name="close-circle" (click)="removeKey(i)"></ion-icon>
+              </ion-chip>
+              <ion-input type="text" [(ngModel)]="keyword" name="keyword" (ionChange)="addKeyword(keyword.trimStart())"
+                (ionBlur)="addKeywordOff(keyword.trimStart())"></ion-input>
+            </div>
+            <br />
+            <ion-label class="txt-dark fs-12 uppercase">{{ 'TITLE' | translate }}:</ion-label>
+            <br />
+            <small>{{ 'REQUIREDFIELD' | translate }}</small>
+            <ion-item lines="none" class="bg-white bdra-30 mgt-10 shadow-1 bg-light">
+              <ion-input type="text" [(ngModel)]="title" name="title"></ion-input>
+            </ion-item>
+            <br />
+            <ion-label class="txt-dark fs-12 uppercase">{{ 'DESCRIPTION' | translate }}:</ion-label>
+            <br />
+            <small>{{ 'REQUIREDFIELD' | translate }}</small>
+            <ion-item lines="none" class="bg-white bdra-30 mgt-10 shadow-1 bg-light">
+              <ion-textarea rows="5" [(ngModel)]="content" name="content"></ion-textarea>
+            </ion-item>
+            <br />
+            <app-timeline-multi-file-upload></app-timeline-multi-file-upload>
+            <br />
+            <br />
+            <ion-button shape="round" expand="block" color="primary" fill="solid" class="uppercase spacing1 fw-600"
+              type="submit" (click)="sendPostRequest(title,content)">
+              {{ 'SAVE' | translate }}
+            </ion-button>
+          </form>
+          <br />
+        </div>
+      </div>
+    </div>
+  </div>
+</ion-content>

@@ -1,0 +1,73 @@
+<ion-header class="parallax-obj parallax-translate-obj">
+  <br />
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button text="" color="primary" icon="ios-arrow-round-back"></ion-back-button>
+    </ion-buttons>
+    <ion-title color="primary">{{ 'TUTORIAL' | translate }}</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <div class="body">
+    <br />
+    <ion-label position="stacked">{{ 'TITLE' | translate }}:</ion-label>
+    <br />
+    <small>{{ 'REQUIREDFIELD' | translate }}</small>
+    <ion-item lines="none" class="bg-white bdra-30 mgt-10 shadow-1 bg-light">
+      <ion-input [(ngModel)]="title" name="title"></ion-input>
+    </ion-item>
+    <br />
+    <ion-label position="stacked">{{ 'EQUIPMENT' | translate }}:</ion-label>
+    <br />
+    <small>{{ 'REQUIREDFIELD' | translate }}</small>
+    <ion-item lines="none" class="bg-white bdra-30 mgt-10 shadow-1 bg-light">
+      <ion-select class="selection" interface="popover" [(ngModel)]="device" name="device">
+        <ion-select-option value="{{equipment.id}}" *ngFor="let equipment of result">{{equipment.model}}
+        </ion-select-option>
+      </ion-select>
+    </ion-item>
+    <br />
+    <ion-label position="stacked">{{ 'DESCRIPTION' | translate }}:</ion-label>
+    <br />
+    <small>{{ 'REQUIREDFIELD' | translate }}</small>
+    <ion-item lines="none" class="bg-white bdra-30 mgt-10 shadow-1 bg-light">
+      <ion-textarea [(ngModel)]="description" name="description" rows="5"></ion-textarea>
+    </ion-item>
+    <br />
+    <ion-label position="stacked">{{ 'USER' | translate }}:</ion-label>
+    <br />
+    <small>{{ 'REQUIREDFIELD' | translate }}</small>
+    <ion-item lines="none" class="bg-white bdra-30 mgt-10 shadow-1 bg-light">
+      <ion-select interface="popover" class="selection" multiple="true" [(ngModel)]="user" name="user">
+        <ion-select-option value="client">{{ 'CLIENT' | translate }}</ion-select-option>
+        <ion-select-option value="technician">{{ 'TECHNICIAN' | translate }}</ion-select-option>
+        <ion-select-option *ngIf="role == 'admin' && parent =='admin'" value="distributor">
+          {{ 'DISTRIBUTOR' | translate }}</ion-select-option>
+      </ion-select>
+    </ion-item>
+    <br />
+    <ion-label position="stacked">{{ 'KEYWORDS' | translate }}:</ion-label>
+    <br />
+    <small>{{ 'REQUIREDFIELD' | translate }}</small>
+    <div class="bg-white bdra-30 mgt-10 shadow-1 bg-light">
+      <ion-chip class="tag" *ngFor="let word of keywords ; let i= index">
+        {{ word }}
+        <ion-icon name="close-circle" (click)="removeKey(i)"></ion-icon>
+      </ion-chip>
+      <ion-input type="text" [(ngModel)]="keyword" name="keyword" (ionChange)="addKeyword(keyword.trimStart())"
+        (ionBlur)="addKeywordOff(keyword.trimStart())"></ion-input>
+    </div>
+    <br />
+    <app-tutorial-multi-file-upload></app-tutorial-multi-file-upload>
+    <br />
+    <br />
+    <ion-button expand="block" shape="round" color="primary" class="txt1 mgt-10 spacing2 fw-600 mini" type="submit"
+      (click)="createTutorial(title,device,description,user)">
+      {{ 'SAVE' | translate }}
+    </ion-button>
+    <br />
+    <br />
+  </div>
+
+</ion-content>

@@ -1,0 +1,7 @@
+{
+  "name": "VMI",
+  "integrations": {
+    "cordova": {}
+  },
+  "type": "angular"
+}

@@ -1,0 +1,89 @@
+ion-content{
+	background-color: #373737 !important;
+	--background: #373737 !important;
+}
+
+.loginauto{
+	background-color: #373737 !important;
+	--background: #373737 !important;
+}
+
+.wrap-login{
+	width: 100%;
+	height: 100%;
+	position: absolute;
+
+	.wrap-interval{
+		width: 100%;
+		height: 100%;
+		position: relative;
+		z-index: 100;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		flex-direction: column;
+		.brand{
+			flex: 3;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			img{
+				margin: 0px auto 15px auto;
+				height: 90px;
+			}
+		}
+		.main-form{
+			flex: 3.5;
+			width: 100%;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			flex-direction: column;
+			form{
+				flex: 3;
+			}
+			.bottom-form{
+				flex: 1;
+			}
+		}
+	}
+
+	.bckg{
+		background-color: #373737;
+	}
+
+	.bg-img{
+		position: absolute;
+		top: 0;
+		left: 0;
+		bottom: 0;
+		right: 0;
+		z-index: 10;
+		img{
+			height: 10%;
+			min-width: 100%;
+		}
+	}
+}
+
+.filter{
+  position: absolute;
+  height: 100%;
+  width: 100%;
+	ion-header{
+		background-color: #373737 !important;
+		--background: #373737 !important;
+	}
+
+	ion-toolbar{
+		background-color: #373737 !important;
+		--background: #373737 !important;
+	}
+	ion-select{
+	  position: absolute;
+	  margin-left: -6%;
+
+	  max-width: 95% !important;
+	  width: 95% !important;
+	}
+}

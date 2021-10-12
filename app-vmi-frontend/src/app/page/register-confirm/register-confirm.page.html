@@ -1,0 +1,41 @@
+<ion-header class="parallax-obj parallax-translate-obj">
+	<br />
+	<ion-toolbar>
+		<ion-title color="primary">{{ 'PASSWORD' | translate }}:</ion-title>
+	</ion-toolbar>
+</ion-header>
+<ion-content>
+	<div>
+		<div class="bg-img bckg">
+		</div>
+		<div class="wrap-interval pdl-50 pdr-50">
+			<div class="core-float">
+				<br />
+				<div class="main-form">
+					<form novalidate>
+						<ion-label class="txt-light fs-12 uppercase">{{ 'PASSWORD' | translate }}:</ion-label>
+						<ion-item lines="none" class="bg-white bdra-30 mgt-10 shadow-1 bg-light">
+							<ion-input type="password" [(ngModel)]="password" name="password"
+								placeholder="{{ 'PASSWORD' | translate }}"></ion-input>
+						</ion-item>
+						<br />
+						<ion-label class="fs-12 uppercase" color="primary">{{ 'PASSRULE' | translate }}:</ion-label>
+						<br />
+						<br />
+						<ion-label class="txt-light fs-12 uppercase">{{ 'CONFIRMPASS' | translate }}:</ion-label>
+						<ion-item lines="none" class="bg-white bdra-30 mgt-10 shadow-1 bg-light">
+							<ion-input type="password" [(ngModel)]="confpass" name="confpass"
+								placeholder="{{ 'PASSWORD' | translate }}"></ion-input>
+						</ion-item>
+						<br />
+						<ion-button shape="round" expand="block" color="primary" fill="solid"
+							class="uppercase spacing1 fw-600" type="submit" (click)="completeRegister()">
+							{{ 'FINISH' | translate }}
+						</ion-button>
+					</form>
+					<br />
+				</div>
+			</div>
+		</div>
+	</div>
+</ion-content>

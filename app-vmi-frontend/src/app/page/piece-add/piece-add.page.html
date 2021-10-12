@@ -1,0 +1,40 @@
+<ion-header class="parallax-obj parallax-translate-obj bckg">
+	<br />
+	<ion-toolbar>
+		<ion-buttons slot="start">
+			<ion-back-button text="" color="primary" icon="ios-arrow-round-back"></ion-back-button>
+		</ion-buttons>
+		<ion-title color="primary">{{ 'PIECES' | translate }}:</ion-title>
+	</ion-toolbar>
+</ion-header>
+
+<ion-content>
+	<div>
+		<div class="bg-img bckg">
+		</div>
+		<div class="wrap-interval pdl-50 pdr-50">
+			<div class="core-float">
+				<div class="brand">
+					<p class="fs-12 txt-dark pdl-30 pdr-30">{{ 'ADDPIECESUB' | translate }}</p>
+				</div>
+				<br />
+				<div class="main-form">
+					<form novalidate>
+						<ion-label class="txt-dark fs-12 uppercase">{{ 'NAME' | translate }}:</ion-label>
+						<br />
+						<small>{{ 'REQUIREDFIELD' | translate }}</small>
+						<ion-item lines="none" class="bg-white bdra-30 mgt-10 shadow-1 bg-light">
+							<ion-input type="text" [(ngModel)]="name" name="name"></ion-input>
+						</ion-item>
+						<br />
+						<ion-button shape="round" expand="block" color="primary" fill="solid"
+							class="uppercase spacing1 fw-600" type="submit" (click)="sendPostRequest(name)">
+							{{ 'SAVE' | translate }}
+						</ion-button>
+					</form>
+					<br />
+				</div>
+			</div>
+		</div>
+	</div>
+</ion-content>
